@@ -1,0 +1,206 @@
+%-----
+
+
+%og \cite{Fearon_2004}  "Civil wars since 1945 have lasted significantly longer when they have involved land or natural resource conflicts between state-supported migrants from a dominant ethnic group and the ethnically distinct 'sons of the  soil' who inhabit the region in question" (interaction to with oil)? husk det er duration..
+
+
+
+one, in future work - could capture various relevant features which I did not successfully incorporate in the present endeavour and which machine/deep learning techniques should be      
+
+
+. Hereafter I present  the feature selection process 
+
+
+
+Builder a Bayesian hierarchical model for prediction conflict fatalities (as defined by upsala) in a given PRIO-grid cell (as defined by PRIO). To do this I first draw upon the results and conclusion from the cross country literature - especially that wich was kindled in the wake of Collier and Hoeffler 1998. Further I draw inspiration and knowledge from more novel contributions treating civil war less aggregated. That is research more focused on geospatial data and analysis. Given these two sources of knowledge - and the probabilistic nature of the subject - using a Bayesian hierarchical model to predict conflict related fatalities presents it self as a fruitful endeavour. Why you ask?
+
+
+
+
+
+\cite{Collier_Hoeffler_1998}: Uses a definition of civil war from Singer and Small(1982). Crucially the definition demands 1000 battle related deaths per year. The Aurthors find that income per capita, ethno-linguistic fractionalisation, natural resources and population size are strong determinants of civil war onset and duration. The effect of ethno-linguistic fractionalisation is non-monothonic; that is countries with highly fractionalised societies have no greater risk of experiencing a civil war than homogeneous ones.\citep[563]{Collier_Hoeffler_1998}. This is also the case for primary commodities (a proxy for natural reasources). Primary commodities increases the risk of civil war unless there where plentiful; then the risk was reduced.\citep[569]{Collier_Hoeffler_1998}.\par
+
+Higher income per capita is negatively correlated with the risk of civil war onset and duration\citep[568]{Collier_Hoeffler_1998}. Population on the other hand is associated with higer risk and longer duration\citep[569]{Collier_Hoeffler_1998}.\par
+
+The causal mechanism behind these results is presented as one of incentives: "war occurs if the incentive for rebellion is sufficiently large relative to the cost" \citep[563]{Collier_Hoeffler_1998}. To elements are thus crucial determinants affecting whether or not potential rebels should revolt; the cost and the prize. Higer income means more to loss by initiating or joining a revolt\citep[565]{Collier_Hoeffler_1998}. More natural resources means more to win - to a certain extent.\citep[566-567]{Collier_Hoeffler_1998}. Regarding the costs, the authors argue that the most relevant "cost" is the rebels coordination cost. The authors propose that both ethno-linguistic fractionalisation and population size are determinants of such coordination cost\citep[567]{Collier_Hoeffler_1998}.\par 
+
+They also check for populations growth, populations density, year since independence and income inequality. But non of these variables appeared significant or changed their results markedly\citep[570]{Collier_Hoeffler_1998}.\par
+
+Civil Wars is thus not caused by grievances, but simple a product of rationale actors chooseing whetere or not fighting is likely to put them in a position superior to that of status que.  
+
+
+
+
+
+s such, a proper place to start will be with the question: why do men rebel? In 1970 a book mantling this very question as its title was accomplished and released by \cite{Gurr_1970}.... \textbf{something relative deprivation}.\par 
+
+% Det her skal være meget mere overordnet; op på et højerer abstract plan; hvad er det egenligt de diskutere? -> Resource curse, Creed, Grievances, Ethnicity, Inequality, relative deprivation. Dem, ano, auto? Onset vs duration. secession vs take over. weak state, strength gradient.. More wars after the civil wars.. comment on pop size and civil war differnetion. Så i stedet for at tage forfatterne en efter en så tag et emne af gangen! Så bliver det også mere analyserende og mindre referende; mere intresant.. Det gør det også lettere at glide insigterne fra GIS contra Cross country ind. OG lettere at nævne i flæng..
+
+% Du behøver jo faktisk heller ikke gå ind og sige hvad de modsiger.. eller?
+
+% -------------------------------------------------
+% Det du gør er at dele literaturen op i fænomener; hvem finder hvad. Og her efter hvilke variabler vælger du at "proxy" disse fænomer med.
+% -------------------------------------------------
+
+Naturally, debates ensured in the following years, but for the purpose of the project at hand we can safely fast-forward to 1998 where \cite{Collier_Hoeffler_1998} presented there first statistical analysis on the courses of civil war. Using cross-country data from 1816-1992 and a definition of civil war from Singer and Small(1982) Collier and Hoeffler concludes that the causal mechanism behind civil wars is one of incentives. Gone were all elaborate notions of grievances and inequality: "war occurs if the incentive for rebellion is sufficiently large relative to the cost" \citep[563-567]{Collier_Hoeffler_1998}. More specifically they find that the following features to be corrolated to the onset as well as duration of civil war: income per capita displays a negativ corrolation; Population count a positivly corrolation and export of primary commodities and ethno-linguistic frationalization are both correlated through concave functions. The prize for intiating - and not least winning - is the opportunity to extract wealth through primary commodities, e.i. natural resources. The cost is that of giving up current livelihood (income per capita) and coordinating the insurrection (made harder by population size, but to a certain extent easier by ethno-linguistic frationalization)\citep[565-570]{Collier_Hoeffler_1998}.\par
+
+The article sparked a plethora of related works expanding on - and challenging - both the results and the interpretations presented by Collier and Hoeffler. Not least that of \cite{Fearon_Laitin_2003}. Using cross-country from 1945 to 1999 and a definition closely resembling that of Collier and Hoeffler focuses soly on the onset of civil wars\citep[76]{Fearon_Laitin_2003}. First of all they also finds that poverty and population size are correlated with increased the risk of civil war, and they are also unable to find any statistical relevant link between inequlity and civil war \citep[83-85]{Fearon_Laitin_2003}. They are not, however, able to identify any statistical discernible connection between the ethnic or religious composition of a country and the risk of conflict; nor any connection between the export of primary comodities and civil war. Thar being said they do find a positive corrolation between export of oil and the risk of civil war, thus still underpining the notion of a reacource curse \citep[85-87]{Fearon_Laitin_2003}. Furthermoere, expanding on the roster of features, they find a positive correlation between rough terrain and the risk of civil war and that New states, Anocracies and states pluaged by political instability have greater risk of experiencing civil war  \citep[85]{Fearon_Laitin_2003}.\par
+
+% der er lidt mere men tror det her må være nok.. Nej hvad med desporras? udenlandsk hjælp??? Kunne godt bliver intrersant, ikke mindst når du skal til at scrape til specialet.
+% men nope; de tjekker; ikke mogetm ed foreing support....
+
+Thou still set in a rational framework their interpretation differs from that of Collier and Hoeffler - as they put it: "Our theoritical interpretation is more Hobbsian than economic"\citep[76]{Fearon_Laitin_2003}. As such, poverty, political instability, dependency on oil and being a new stat or a anocrasy are all taken as signs of a week state-apparatus prone to conflict. Population and rough terrain are in this vain argued to hinder the projection of stat-power, effectively impeding the state's relative strength\citep[75-77]{Fearon_Laitin_2003}.
+
+Revisiting their earlier results \cite{Collier_Hoeffler_2004} returns with an article in 2004. The underlining premise is similar to that of their first article, but framed even shaper; is civil war the product of greed or grievances? Oppotunity or motive?\citep[563]{Collier_Hoeffler_2004}. Recognizing that it might be imprudent to assume that duration and onset are determined by the factors, they now focus solely on onsets \citep[563]{Collier_Hoeffler_2004}. They choose three components to represent opportunity: extortion of natural resources (proxied by the ratio of commodity exports to GDP), donations from Diasporas (proxied by number of imigrants living in the USA) and subversion from hostile governments (proxied). [565-566]...... 
+
+% Det bliver langt og røvkedeligt..... Lav tabellen og kom videre
+
+
+
+
+
+distance to the nations capital - gives the spherical distance in kilometers from the cell centroid to the national capital
+city in the corresponding country,
+
+Travel time - The travel time in minutes by land transportation to the nearest major city with more than 50 000 inhabitants
+
+
+total size of the country: the country size according to the cshapes dataset \citep{Weidmann_2010} 
+
+
+the absolute country size, the distance to the capital, the distance a major city
+
+\textbf{ttime\_mean} 
+
+\textbf{capdist}
+
+\textbf{gwarea\_country\_year\_sum}
+
+
+
+\cite{Buhaug_Gates_Lujala_2009} : DISTANCE (and tarrain?) (Boulding)
+\cite{Cederman_Buhaug_Roed_2009} : DISTANCE and tarrain (Boulding)
+
+\cite{Buhaug_2010}: "The projection of power across distance comes
+at a cost. Therefore, the state apparatus of a densely populated country can monitor
+and control the population more efficiently than can leaders of an otherwise similar
+country with vast and scarcely populated territory (see Herbst, 2000; Tilly, 2003).
+While the potential for state strength may still be high in large countries—even in
+a strictly domestic setting—there are other factors, often more powerful, that act
+in the opposite direction. In particular, large hinterlands and isolated peripheries
+are favorable to insurgency. In sum, this suggests that large countries are relatively
+more exposed to intrastate conflict (although most of these are likely to take the
+form of remote, separatist attempts)."
+
+
+The conflict induced X (inertie, conflict trap ect..)
+
+\begin{description}
+\item [past\_fatalities]  
+\item [past\_conflicts]  
+\end{description}
+
+
+The heirarchi:
+\begin{description}
+\item [gwno]  
+\item [year]  
+% And what about spatial autocorrolation?
+
+\end{description}
+
+
+
+
+
+\cite{Collier_Hoeffler_1998} : Income (per capita ppp), primary comodities, primary comodities(sq), Ethno-linguistic fractionalisation
+
+\cite{Fearon_Laitin_2003} : Rough tarrian/ mountians
+\cite{Collier_Hoeffler_2004} : linear DECAY term since last conflict.
+\cite{Fearon_2004} : sons of the soil.
+\cite{Ross_2004} : Prime comodities
+\cite{Fearon_2005} : prime Commodity export
+
+
+\cite{Hegre_Sambanis_2006} : which we model as a DECAY function of time at peace
+
+Among others, we include a decay function proxregc of the Polity
+durable variable, which measures the number of years since an institutional change
+that leads to a minimum of three points' change on the Polity index.
+
+In a review of the quantitative literature on civil war, Sambanis
+(2002) identified the following three core variables that are almost always included
+in models of civil war onset: the natural log of population (Inpop), the length of
+peacetime until the outbreak of a war (pt8, which we model as a decay function of
+time at peace), and the natural log of per capita gross domestic product (GDP) in
+constant dollars (Ingdp).
+
+Noeghood effect of civil wars - right? Ud over spatial autocorrolation kan du modllere det på både lande og celle niveau - det vill fylde meget mind, men også smide meget information væk...
+
+blimes\_2006: etniske kløfter gør alt være; i så fald burde du inkludedere excluded i hierarkiet...
+
+har også argumenter vedr. mange etniske grupper og faldende risiko for conflict... Og det har C og H 1998 jo også
+
+også om hvorfor prediction er viktigt (p. 545) - se også Schrodt xxxx, Goldstone 2010 og Greenhill, Bakke et al.. XXXX
+
+"The "neighborhood at war" (natwar) variable has robustly positive estimates for
+both conflict variables, lending support to hypotheses regarding the significance of
+diffusion and contagion effects in civil war"
+
+\cite{Kalyvas_2007} :
+\cite{Vreeland_2008} :
+\cite{Cederman_Gleditsch_2009} :
+\cite{Cunningham_Gleditsch_Salehyan_2009} :
+\cite{Hegre_Oestby_Raleigh_2009} : also a bit on prime C
+\cite{Buhaug_Gates_Lujala_2009} : DISTANCE (and tarrain?) (Boulding)
+\cite{Cederman_Buhaug_Roed_2009} : DISTANCE and tarrain (Boulding)
+\cite{Beardsley_McQuinn_2009} :
+\cite{Weidmann_2009} :
+
+\cite{Goldstone_2010} : Infant mortality deviant from global mean, factionalisation (political system), state led discrimination, conflict ridden neighbourhood. p:  
+
+\cite{Blattman_Miguel_2010} :
+\cite{Buhaug_2010} : cap dist, oil, ln(gdp per cap)
+\cite{Cederman_Weidmann_Gleditsch_2011} :
+\cite{Cederman_Gleditsch_Buhaug_2013}:  
+
+Have yet to finish/read: \cite{Gurr_1970}, \cite{Skocpol_1979}, \cite{Kalyvas_2006} and 
+
+\cite{Cederman_Gleditsch_Buhaug_2013} Number of previous conflicts
+
+introducer prio grid og UCDP før det her...
+
+Og du tager kun efter 1990 fordi...
+og kun til 2010 fordi..
+
+%The initial variables:
+
+ %   prio_static_lean: 'gid','landarea','ttime_mean','mountains_mean','petroleum_s'
+  %  prio_yearly_interp_lean: 'gid','year','interp_pop_gpw_sum','interp_gcp_ppp','interp_urban_ih','interp_agri_ih','interp_forest_ih'
+  %  prio_yearly_lean: 'gid','year','gwno','gwarea','bdist1','bdist3','capdist','excluded','petroleum_y','nlights_calib_mean' (bdist3 minimere nans)
+
+Feature engineered:
+
+
+Hvor kommer de så fra? teoritisk set?    
+Og hvordan håndetere du missing?
+
+Faeture selection (Manuel and Automatic):
+
+
+
+
+
+
+Gurr 1970... In 1998 Collier and Hoeffler started a greater debate regarding the "causes" of civil war.
+
+
+\subsection{Civil war disaggregated and GIS}
+
+(Also introducing the modern take, some methods and the data)
+
+2013 - Cederman, Wiedmann and Gleditsch (book not yet read)
+
+Så hvis det er den arabiske verden der slå i region-mæsssigt, så kan det meget vel være at det er Jacobs data du skal inkoorporere.. Det kunne være frækt.
+
+

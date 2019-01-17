@@ -1,0 +1,490 @@
+%\pagestyle{article}
+\documentclass[a4paper]{article}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx} % for figures
+\usepackage{csquotes}
+
+\usepackage{natbib}% better citation
+\usepackage{hyperref} %autoref
+
+%% Sets linestretch, paragraphstrech, indentation and footnote stuff 
+\usepackage{parskip} %space between paragraphs
+\parskip=12pt %set space between paragraphs
+\setlength\parindent{12pt} %paragraf indentation
+\usepackage[onehalfspacing]{setspace} %linespacing; does not affect footnotes
+\setlength{\footnotesep}{0.7\baselineskip}% space between footnotes
+\usepackage[hang,flushmargin]{footmisc} %% removes identation in footnoteshttps://www.overleaf.com/project/5b98e00a21d3bd15ac5a2e86
+
+\usepackage{makecell} % make cells in tabels for longer text
+
+\usepackage[colorinlistoftodos]{todonotes}
+
+%% For header and footer (1)
+% Marco
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\textwidth = 424pt % test width ish
+\oddsidemargin = 18pt % margin width ish
+
+\fancyheadoffset{0 in} % Shifty solutions..
+
+\fancyhf{} %% clear defuelt header and footer
+
+%% For header and footer (2)
+%Specifics
+\lhead{Simon P. von der Maase}
+\rhead{\today}
+
+\lfoot{University of Copenhagen}
+\rfoot{\thepage}
+\renewcommand{\footrulewidth}{0.8pt}
+
+\title{A Morden Approach to Conflict Prediction\\or: Dude, Here's Your Conflict\\ or: Where Men Rebel}
+
+\author{Simon Polichinel von der Maase}
+\date{September 2018}
+
+\begin{document}
+
+	\begin{titlepage}
+		\maketitle
+		\noindent\rule{\linewidth}{0.4pt}
+		\begin{figure}[h]
+			\centering
+			\includegraphics[scale=0.32]{KU_logo.png}
+		\end{figure}
+		\thispagestyle{empty} % removes page number on front page
+	\end{titlepage}
+    \tableofcontents
+\pagebreak
+
+\begin{abstract}
+\todo[inline]{To come..}
+\end{abstract}
+\pagebreak
+
+\section{Introduction}
+%\subsection{The 'What'}
+
+This paper presents a modern computational approach to conflict prediction and forecasting. That is; a unified framework to asses the probability that a given sub-national geographical location will experience battle-related deaths as a consequence of intra state conflict. The framework is constructed as a forcasting problem, thus the prediction target is whether or not the given location experiences any battle-related deaths \emph{next year}. Or in mathematical terms at $t+1$. The given geographical unit is a PRIO-grid cell, wich is a cell of $0.5\times0.5$ decimal degress. I am not trying to estimate the number of deaths; only the presence of deaths. Thus the target is binary, taking eihter the value of 1 or 0 with 1 denoting the presence of conflcit. In mathematical terms; $target\in\{1,0\}$. Importantly, however, the estimate will not be binary but probabilistic; between 0 and 1. In mathematical terms; $target\in[1,0]$.\par
+
+This is a preliminary project, thus the aim is as much to explore fruitful approaches and methods for future research as it is making good predictions. As a consequence a lot of this paper is dedicated to choosing what goes into the model and evaluating what comes out.\par
+
+The model it self consists of an ensemble of Extreme Gradient Boosting classifiers (xgboost), which is an special boosting algorithm based on ensembles of decision tress well suited for both large date-sets and rare events detection.\par
+
+What goes in to the model is a roster of features derived from both the theoretical and empirical literature regarding civil wars and intra-state conflicts. The relationship does not need to be causal, but I do demand the there is a salient theoretical link between the target and the features, which would make the feature useful in a practical long-term forecasting scenario.\par
+
+What comes out of the model is first of all probabilities of conflict deaths in a given geographical cell at a given year which are evaluated against the actual observations. But just as importantly the xgboost algorithm allows for evaluation of the individual features importance in the prediction process. This insight is paramount when deciding how to improve the framework and where to invest resources in future endeavours.\par
+
+% BAYSESIAN CORRECTION ER VIGTIGT!
+
+The model constructed i remarkable reliable in out-of-sample prediction with an AUC (ROC) of XX. Even more impressive is the fact that i captures all most all events, with a recall of XXXX with a threshold of 0.5. Unfortunately, when faced with the unbalanced nature of the real world the model do generate relatively many false positives as underscored with a precision at XXXX and an average precision (precision recall curve) of XXXX. Never-the-less the model does reach a accuracy of XXXX. Or presented in a less tecnical jargon: If I catagories all predictions with a score of 0.5 and above as predicted conflicts then given all the conflicts - pertaining to some given year - my model will on average correctly classify XXXXX\%(recall) of the conflicts wich will occour the following year. However these events only make op XXXX\% of events classified by the models as conflicts. Thus, I do predict a more dangerous world then we actuaalt live in. Never-the-less the model is over all correct in its assesment XXXXX\% (accuracy) of the time.\par
+
+The Features credited with most of the prediction power are generally features pertaining the the temporal and spatial movement of conflict; that is how far is a cell from the nearest conflict; How many conflicts have the cell previose seen; How many fatalities where 'this' year reported in the country which the cell belongs to ect.. Next comes features pertaining to the population size of the cell and the size of the country wich the cell belongs to. Then grievance based features such as whether the cell is economically deprived relative the the country is whether cell is inhabited by politically excluded ethnic groups. Lastly come features pertaining to greed and resources such as absolute economic capacity and the presence of oil.\par
+
+Going forward with future endeavours I recommend allocating resources to create a more unified and systematic framework modeling the temporal-spatial evolution of conflicts.
+
+\subsection{The 'Why'}
+%Why multi level model? why not ANN? becouse now you use xgboost. Why bother with the features? Why bother with the theory?:
+% Why disaggregated? (ref: introduction to special issue) Why multi-level? (ref. gellman, mc eldrith)
+
+\begin{displayquote}
+\emph{[...] the estate of Man can never be without some incommodity or other; and [...] the greatest, that in any form of Government can possibly happen to the people in generall, is scarce sensible, in respect of the miseries, and horrible calamities, that accompany a Civill Warre;} \cite[128]{Hobbes_1991}  \par
+
+\end{displayquote}
+
+As the staging Hobbes-quote illustrates, civil war and internal conflicts are no novel phenomenon, nor are the efforts to understand it. Presumably intra-state conflicts have been around as long as there have been states to exercise conflict within - and the last centuary has been no exception. Since the conclusion of the Second World War intra-state conflicts have been far more common then inter-state wars \citep[563]{Collier_Hoeffler_2004}; Over five times as many people have died in intra-state conflicts compared to inter-state wars \citep[563]{Collier_Hoeffler_2004}; and since 1960 over one half of all nations have experienced some sort of violent internal conflict leading to fatalities \citep[3-4]{Blattman_Miguel_2010}.\par
+
+Importently, internal conflicts should not be dismissed as internal affairs of little concern to other then the inflicted host and its next of kin. Examples of spillover effects facilitating the spread of conflicts across boarders a ample. At country level, having a country located in a conflict ridden neighbourhood have been shown to be a robust predictor of internal conflict \citep{Hegre_Sambanis_2006,Goldstone_2010}.\par
+
+Internal conflict is thus a highly destructive and potentially contentious malaise only to be ignored by the most imprudent or hostile observers. Understanding internal conflicts in order to prevent or mitigate the destruction is indeed as crucial as ever.\par
+
+Encouragingly, developments in statistical techniques, data availability and computational power makes the endeavour slightly more feasible with each passing year \footnote{Unless, of course, conflict is inherently shrouded in ontological uncertainty rather the epidemiological uncertainty as implied by \cite{Gartzke_1999}}. One resent development is the shift in focus from cross country comparison towards disaggregated analyzes on sub-country unites. Given the nature - and indeed definition - of intra-state conflicts, this development is a promising step towards a better understanding the phenomenon \citep{Cederman_Gleditsch_2009}. 
+
+This leads us to the point of departure for the present endeavour. The project at hand explores a roster of modern tools and data to assess their potential regarding prediction of intra-state conflicts (as defined by UCDP) at the sub national level (Prio Grid level). More specifically I utilize a number of selected features, derived primarily from the Prio Grid database \citep{Tollefsen_2012} and the UCDP data base \citep{UCDP_2017}. I incorporate these into a Bayesian multi-level logit regression aimed at predicting the presence of fatal intra-stat conflicts $\in \{0,1\}$.\par
+
+%what extent it is possible to predict intra-state conflicts (as defined by UCDP) at the sub national level (Prio Grid level). To this end I utilize a number of selected features, derived from the Prio Grid database, and a Bayesian hierarchical multi-level logit regression.\par
+
+As such the project is preliminary in nature and only explores the fertility of a limited number of methods and features. Thus, while the approach taken here will be evaluated on account of its predictive capabilities, the central mission is to identify paths to be taken and problems to be solved in future endeavours - not generating the highest possible prediction power in itself. As a result, the data, features and model specifications are chosen on account of three criteria: first the setup needs to match and the probabilistic nature of the problem at hand. Second the setup needs to facilitate the incorporation of numerous theoretical and empirical insights, which the related litterateur offers. Third, for the sake of evaluation and future improvement and innovations, the setup needs to allow for somewhat meaningful interpretations of the individual model-specifications and features.\par
+
+To accommodate these criteria I use a Bayesian Multilevel framework which is well suited of the nested structure of the problem \cite[XXX]{Gelman_2006}. I strive to incorporate only theoretical relevant and correctly specified features. I utilize a only limited number features and refrain from using sophisticated dimensionality reduction methods and "blackbox" machine/deep-learning techniques - not as a critique of these tools, but to ease extraction of relevant insights and inspiration regarding future improvement. Indeed incorporation of these techniques might well be the part of said 'future improvement'.
+
+This endeavour, then, finds itself somewhere in between the two statistical traditions of estimation and prediction. Credible predictions are needless to say the crux of the matter, but the construction of a model generating credible prediction - not least in the longer run - demand theoretically sound gears and innards. Or, to formulate it in slightly more provocative terms; If we were ever to know the true and exact data generating process, a credible simulation - and derived predictions - would be trivial and a simply question of data acquisition\footnote{Which, unfortunately, is seldom a trivial endeavour.}.\par %Epistimologisk vs ontologisk uvidenhed.
+
+A final disclaimer is thus in order; though I will try to incorporate proposed causal ties into the model, the project at hand neither aims nor claims to 'prove' causality through clever econometric or cunning research-designs\footnote{A more in-depth discussion regarding predictions and causality will be presented in [SECTION XXXX]}. I will only explicate the theoretically proposed causal mechanism and strive to make the model and features correspond to these mechanisms in order to archive credible results. Constructing the model on theoretical sound features also serves as a first cautionary step against over-fitting the model to the noisy nature of our world.\par
+
+
+\subsection{The 'How'}
+
+The overarching - and arguably over-ambitious - research question being posed here, can be formulated as such:\par
+
+\textbf{$\textrm{Research question}_{grand}$:} To what extent is it possible to predict the geographic location of future intra-state conflicts. \par
+
+Needless to say the phrase "To what extent [...]" implies the caveat: " - Given the humble scope of the project and the limited computational resources at my disposal". Thus A less appetizing yet more appropriate formulation, mirroring the preliminary and exploratory nature of the endeavour, is:\par
+
+\textbf{$\textrm{Research question}_{humble}$:} To what extent can the methods and features presented and utilized below, contribute towards predicting geographic location of future intra-state conflicts. \par
+
+Though the 'grand research question' will function as a lodestar, the 'humble research question' will be our practical guide on the ground. As such, the following sections will first introduce the data sources and how the various features pertain to the literature: From here, I specify the selection process which aims to choose the best subset of predictors among the full set of different features and specifications. With this subset I move on to the model construction specification followed by a presentation of the results. Lastly - as appropriately given the exploratory nature of the project - I discuss how the model in future projects can be improved, both regarding features and the specific estimation technique.\par
+
+\todo[inline]{Bliver udbybet og accompangeret af resultater når jeg kommer lidt længere.}
+
+
+
+\section{The Data Sources} % -------------------------------------------------------------------------
+
+\todo[inline]{Noget meta text}
+
+\subsection{The conflict data}
+
+Most central to the endeavour at hand lies - of course - the data regarding intra-state conflict itself. This data is obtained through the Upssala Conflict Data Program (UCDP) \citep{Sundberg_2013, Croicu_Sundberg_2017}. Specifically I utilize the UCDP Georeferenced Event Dataset (GED) Global version 18.1 \citep{UCDP_2017}. The dataset contains records of conflict fatalitest and the corrosponding coordinates from XXXX to XXXX. Conflict fatalities here defined as: 
+
+\begin{displayquote}
+
+\emph{"An incident where armed force was used by an organized actor against another organized actor, or against civilians, resulting in at least 1 direct death at a specific location and a specific date."}\citep[38]{Croicu_Sundberg_2017}.
+
+\end{displayquote}
+
+Further definitions regarding armed force, organized actor ect. can be found in \cite[10-11]{Croicu_Sundberg_2017}.\par 
+
+The project at hand limits itself to intra-state conflict, thus I only included incidents NOT including two different nations as the organized actors\footnote{ Naturally the distinction between a intra-state conflict and a proxy war can be very hard to uphold in practise. Never-the-less, though proxy wars are effectively between two states, the phenomenon is arguable more similar to intra-state conflicts and civil wars then to all out open warfare between to nations. see XXXX for a in-depth discussion}. One could split conflict by many other lines and sub-lines. However, The distinction between international wars and internal conflict the only categorization I find prudent to utilizing a priori. Further sub-categorization - eg. separatist wars, sons-of-the-soils conflicts, coups ect - should be driven by empirical results derived from the data at hand. This is a subject I shall return to in [sectionXXXX].\par
+
+[fig 1]
+
+To minimize the number of missing values to be accounted for and imputed\footnote{For more on this see the appendix, \autoref{missing}} I incorporate from 1990 to 2015 for the prediction task at hand. Exclusively for the conflict data I will also utilize data from 2016 and 2017 for a final forecasting test.
+
+
+\subsection{The contextual data}
+
+Given the geo-referenced nature of the UCDP data, the number of interesting data sources one could enhance it with is near endless. That being said the aggregation of various geo referenced and geo-spatial data accompanied with the appropriate grid construction and feature engineering can be a non-trivial and time consuming endeavour. It is certainly a interesting and most likely fruitfully undertaking, but one which must be saved for less preliminary work then the project at hand.\par
+
+Conveniently the Peace Research Institute Oslo (PRIO) has created what they call a "unified spatial data structure" \cite[1]{Tollefsen_2012}. More specifically they have divided the world\footnote{Excluding Greenland and Antarctica} into grid cells of 0.5 x 0.5 decimal degrees. For each cell PRIO has gather a large selection of features, including economic, geographic and demographic features \citep{Tollefsen_2012}. Naturally the PRIO GRID also extent itself across time, and the most current data includes cell-years from 1946 to 2015 - with some divergence in the data coverage across the years \citep{Tollefsen_2016}. As metioned more complete data is available for more recent years; especially after 1989. Thus the period from 1990 through 2015 appears suitable. How I handle the the remaining missing values is described in the appendix, \autoref{missing}.\par
+
+The PRID GRID is constructed as geo-spatial data and primed for collaboration with the UCDP data, as such merging and handling these two data source is a trivial task. Before the more systemic/mechanical feature selection in \autoref{feature_selection} I choose handpick features from the PRIO GRID wich are moste often and constantly associated with internal conflict in the corresponding litterateur. Naturally a more data drive approach wold be preferable; unfortunately neither the computational power at my disposal or scope of this project allows such rigorously. The following section will present the handpicked features and also discuss some notable absentees\footnote{which will either be compensated for in the model specification or should be central elements in any future development of the model.}.\par
+
+\section{Phenomenons to be Included as Features}
+
+\todo[inline]{Det her afsnit bliver alt for langt. I den færdige opgav vil jeg kun gå i dybden med de features det kommer gennem feature selction processen. Alle afsnittene vil dog være tilgængelige i appendix.}
+
+In this section I will present the initial roster of features included in this project accompanied by some light theoretical justification. Thus this section also serves as a rather compressed litterateur review, or at least overview. The features presented here are both features utilized directly from the data source and features manipulated or interacted as to better fit various theoretical expectation. That being said a the number of specific specification proposed throughout the litterateur is to large to full encompass, and thus I have strived to include only the features wich have shown a large degree of robustness over the years. Furthermore a number of interesting features are not readily extracted from the data sources utilized. These will be discussed in \autoref{notable_absentees}.
+
+%noget med at teorien især kommer fra civil war som er lidt noget større... Og noget med at din data er disagregaret hvilket giver nogel andre muligheder for at udforske diverse teorier...
+
+\subsection{Wealth and State Capacities} % -------------------------------------------------------------------------------------------------------------------------------------
+
+ Easily one of the most robust findings in country level studies of civil wars is GDP per capita\footnote{Often logged and adjusted for purchasing power parity (ppp)} has a negative effect on the probability of civil war onset \citep{Collier_Hoeffler_1998, Fearon_Laitin_2003, Collier_Hoeffler_2004, Hegre_Sambanis_2006, Blattman_Miguel_2010} and also to some extent the conflict duration\citep{Fearon_2004, Hegre_Oestby_Raleigh_2009}.\par
+ 
+ A number of mechanisms have been proposed linking GDP to conflict, Two have been especial prolific. The first is championed by \cite{Collier_Hoeffler_1998, Collier_Hoeffler_2004} sees GDP per capita as a proxy for opportunity-cost. that is what i given citizen have to loss by engaging in conflict. The second story draws on some insight from \cite{Skocpol_1979} and also echoes the gospel of modernization theory [REF!]. Regarding the context at hand it has most prominently been presented by \cite{Fearon_Laitin_2003}. Here GDP per capita is seen as as proxy for state capacities. Simple put; weak or fragile states have low GDP per capita and these states are more conflict prone\citep[88]{Fearon_Laitin_2003}.\par
+ 
+ A measure for GCP (Gross cell product) per capita (ppp) is included in the PRIO GRID fomr the Gecon dataset \citep{Nordhaus_2006} and this measure could be aggregated creating a feature for GDP per capita (ppp) \citep{prio_code_2015}. However the data available from the directly from the PRIO GRID only extent to 2010. Fortunately \cite{Elvidge_2009}, \cite{Chen_Nordhuas_2011} have shown that Night light emission can serve as an proxy for economic activies - especially for countries of areas with low-quality statistical systems and few or no recent population or economic censuses. \citep{Chen_Nordhuas_2011} - an approach explicitly proposed by \cite[p. 101]{Cederman_Gleditsch_Buhaug_2013} in regards to conflict studies. A ad hoc illustration of the high correlation between the two features can also be found in the appendix, \autoref{GCP_corr}\footnote{Futhermore initial test showed very limited difference between the derived features and interactions, thou the features constructed on the basis of Night Light Emission was picked more often by the sequential feature selection process in \autoref{feature_selection}.}.\par
+ 
+ The measure of Nigth Light Emmision in the PRIO GRID is borrowed from \cite{Elvidge_2014}it extent all the way up to 2015 and calibrated as to better accommodate time series \cite{prio_code_2015}.\par % futhermore there is a interprebility problem with unpopulated cells having zero gpd per capita
+ 
+ Thus I proceed from here with two features:
+ 
+ \begin{itemize}
+     \item Cell-year specific Night Light Emission (mean)
+     \item Country-year specific Night Light Emission (aggregated mean) 
+     %\item Country-year specific Night Light Emission (aggregated country median) % why? Den har du jo mest fordi du bruger den til at construere en anden var..
+ \end{itemize}
+
+% Theritical justification for the cell level? Det er en lidt bræt slutning...
+Naturrally one could argue that wealth is a relative concept, which leads us to the next section.
+
+\subsection{Inequality and depravation} % ------------------------------------------------------------------------
+
+If we - for the time being - leave the Strong State proposition behind and focus on the satisfaction of the individual citizens it is only natural to argues this satisfaction should be considered a function of \emph{what we have} and \emph{what we believe we rightfully should have}. This, indeed, is the crux of Robert Gurr's \citeyearpar{Gurr_1970} Relative Deprivation Theory. Perhaps one of the most seminal\footnote{At least after Marx} takes on inequality and conflict, \cite{Gurr_1970} defines relative deprivation: 
+
+\begin{displayquote}
+\emph{"[...] as actor's perception of discrepancy between their value expectation and their value capabilities. Values expectation are the goods and conditions of life to which people believe they are rightfully entitled. Value capabilities are the goods and conditions they think they are capable of getting and keeping."} \citep[24]{Gurr_1970}. 
+\end{displayquote}
+
+While intuitively appalling, Gurr's theory was award little credit doing the haydays of comparative corss country conflict studies. Supporting statistical results failed to materialize, and the axplanation eccoed the of \cite[11]{Skocpol_1979}; injustice and misery is simply to widespread to account for the rarity of major conflicts (\citealp[p. 22]{Collier_Hoeffler_1998},  \citealp[p. 22]{Collier_Hoeffler_2004} \citealp[p. 44]{Fearon_Laitin_2003}(FLERE?)). (så lige styr på de 22 side tal der?)
+
+% That being said, these studies have looked at larger conflicts often setting a minimum of 1000 battle related deaths per year compared to the studies at hand wich operates with a treshold of only 25 deaths per year
+
+However, \cite{Cederman_Gleditsch_2009,Cederman_Gleditsch_Buhaug_2013} have noted that the aggregated country level features conventional used as indicators for inequality might lead to mis-specifications; that is, they do not properly measure the theoretical concept of relative deprivation or the correct mechanisms through which inequality affects conflict-propensity \citep[XX]{Cederman_Gleditsch_Buhaug_2013}. Acknowledging this critique I utilized the operationalization put forth in \cite[p. 104-105]{Cederman_Gleditsch_Buhaug_2013}\footnote{These scholars alos argues the higher conflict propensity might be fund in the other end of the inequality spectrum. That is; one could imagine a mechanism akin to relative deprivation in one end, while simultaneous at the other end, one might see well-off people wanting to secede from or take over a country if they fear to much redistribution. However, they find little statistical backing for this proposition, neither did my initial tests. Thus I only use the measures corresponding to actual Relative Deprivation}:\par
+
+$$y_g = \textrm{country year mean}\quad ,\quad  y_c = \textrm{cell year value}$$
+$$\textrm{low\_ratio} = y_c/y_g  \quad \textrm{if} \quad y_c < y_g, \quad 1 \quad \textrm{otherwise}$$
+
+%$$\textrm{high\_ratio} = y_g/y_c  \quad \textrm{if} \quad y_g > y_c, \quad 1 \quad \textrm{otherwise}$$
+Thus cells which are relatively well of compared to the mean of country takes the value 1. Cells worse of the the country mean takes a value above 1, with the magnitude of this value indicating \emph{how} severe the deprivatione is. \cite{Cederman_Gleditsch_Buhaug_2013} Uses GCP per capita (ppp) but as mentioned also suggests using night light emission, Thus I here produce ratio feature solely on Night Light emission (cell-year mean).\par
+
+While I do appreciate this operationalization I also construct my own relative deprivation feature, which differs in a number of small but relevant ways. First we know that wealth distributions in general are highly skewed, and this is no different when we use Nigt Light Emission as indicator (se Appendix XXXX). Thus, given Gurr's original conceptualization I find it more realistic that individuals should compare themselves to the median - not the mean. That is citizens in one cell compare their living standard to the most common living standard in the country over all. In the same vein, instead of a fraction, I simply calculate the difference between the cell-year values and the country-year median. Lastly I let the value start at 0. This I do to insure that interactions create later only "activates" if the cell is actually depraved. In the case of \cite{Cederman_Gleditsch_Buhaug_2013} when a cell is not depraved, the value of a interaction takes the naked value of the other interacted feature, which is arguably somewhat imprudent. Mathematical the features is formulated as such:\par
+
+$$y_g = \textrm{country year median}\quad ,\quad  y_c = \textrm{cell year value}$$
+
+$$\textrm{low\_diff\_median} = y_g - y_c  \quad \textrm{if} \quad y_c < y_g, \quad 0 \quad \textrm{otherwise}$$
+
+Thus the feature takes the value 0 if the cell is on level or above with the rest of the country. If the cell is deprived the value correspond to the difference between the country-year median and the cell value. Naturally - and as we I shall return to later - this measure and the measure by \cite{Cederman_Weidmann_Gleditsch_2011} are highly correlated, nut that does not change the fact that this last feature appears somewhat closer to the notion of relative deprivation, and more impotently it handles interactions somewhat more appropriate or at least conventional. As before the feature uses on Night Light emission (cell-year mean) as indicator for wealth.\par
+
+\subsection{Ethnicity and Exclusion}
+
+
+%BLIMES 2006 er også interesant her: A carefully constructed, theoretically driven empirical test has not been carried out (regaring ethnisity and civil war onset) p. 539
+
+% Ethnicity:
+%\paragraph{excluded ethnic groups} (excluded and excluded\_binary) 
+
+Denotes the number of excluded ethnic groups (e.i. discriminated or powerless) in a given cell at a given year. The measures are originally from the GeoEPR/EPR data by \cite{Vogt_2015}. To better suit the theoretical argumentation laid forth in \cite{Cederman_Gleditsch_Buhaug_2013}(side) \citep{prio_code_2015}. I also create a dummy (excluded\_binary) which simply denote \emph{if} there are any excluded ethnic groups. 
+
+As with inequality the link between ethnic diverse societies and conflict propensity have been ridden with disagreement and controversies. In the quantitative literature results have remained somewhat inconsistent \citep[23-24]{Blattman_Miguel_2010}. A number of studies have fund different - and sometime quite convoluted - relationships between ethnicity or discrimination and conflict \citep{Collier_Hoeffler_1998, Fearon_2004, Blimes_2006, Hegre_Sambanis_2006, Goldstone_2010}, while other studies have fund little or no trace of the connection \citep{Fearon_Laitin_2003, Collier_Hoeffler_2004}(more? CH 2004 right?).\par 
+
+As with the problem with inequality the lack of discernible results have often been attributed to poor feature specifications, a framework not capturing the proposed theoretical mechanism and not least country aggregated data \citep{Blimes_2006, Blattman_Miguel_2010, Cederman_Gleditsch_Buhaug_2013}. Mirroring they effort concerning inequality \cite{Cederman_Gleditsch_Buhaug_2013} have recently made use of new desegregated data \citep{Girardin_2015} to closer model the theoretical mechanism proposed. Without going to much in-depth here the feature \cite{Cederman_Gleditsch_Buhaug_2013} utilizes aims to capture the effect of \emph{horizontal inequalities} as defined by \citep[31-35]{Cederman_Gleditsch_Buhaug_2013}. That is the systematic discrimination or political exclusion of and coherent ethnic group. Thou not framed in the theoretical context of horizontal inequalities \cite{Goldstone_2010} finds results supporting the argument using the Minority at Risk data from \cite{Gurr_1995}.\par
+
+Conveniently, a measure from \cite{Girardin_2015} of how many excluded ethnic groups reside in each PRIO GRID cell is readily aviable in the PRIO GRID. To mimic the theoretical proposition lead foth in \cite{Cederman_Gleditsch_Buhaug_2013} I binarize this variable to simply indicate whether or not a given cell is inhabited by a politicly excluded or discriminate ethnic group\footnote{Also initial test did not show much prospect of incorporating the full count}. 
+
+%\cite{Blimes_2006} etnisk factionalisering gør det meget sikre at andre facotre giver borger krig...
+% Komme nede ved hierarkiet
+
+Not surprisingly \cite{Cederman_Gleditsch_Buhaug_2013} futher finds that the properbilty of conflict gets even larger if political exclusion is followed by group deprivation, wich leads to the next feature:
+
+\subsection{Deprivation and Exclusion - an Interaction}
+
+This interaction does not need much justification; the general idea is simply that groups of humans (here specificly ethnic groups) which are both cut of from political influence and find themselves to be generally worse of then other - more influential - groups, tends to accumulate a lot of grievances. Given that few to no political solutions are available for these groups, they are reletively likely to experience conflict\cite[103-111]{Cederman_Gleditsch_Buhaug_2013}.\par
+
+Given that I have utilized to measures of relative deprivation I also construct two interaction to be evaluated by the systematic feature selection to come:
+
+$$ \textrm{excluded\_b\_low\_ratio\_nlights} = \textrm{excluded\_binary }\times \textrm{low\_ratio\_nlights} $$
+
+$$ \textrm{excluded\_b\_low\_median\_diff\_nlights} = \textrm{excluded\_binary }\times \textrm{low\_median\_diff\_nlights} $$
+
+One very relevant difference here is that the feature from \cite{Cederman_Gleditsch_Buhaug_2013} takes the plain value of 'excluded' $\in {0,1}$ if the cell is not deprived while the interaction only takes the value of 0 if 'excluded' takes the value zero. As mentioned I find this somewhat messy and statistically it makes it harder to determined the effect of 'excluded' in it self and the interaction. Naturally this is an issue I return to in \autoref{feature_selection}.\par
+
+\subsection{Population size and density} 
+
+Returning to a variable with a rather flawless record regarding conflict onset we have "country population size" \citep{Collier_Hoeffler_1998, Fearon_Laitin_2003, Collier_Hoeffler_2004, Hegre_Sambanis_2006}\footnote{though see \cite{Goldstone_2010}}. Furthermore \cite[287]{Fearon_2004} also finds that country population is correlated with longer civil wars.\par
+
+Lastly when it comes to disaggregated grid data, the "grid population size" also seems a rather robust predictor \citep{Buhaug_2010, Cederman_Gleditsch_Buhaug_2013}\footnote{Though see \cite{Hegre_Oestby_Raleigh_2009}}. Thus, whether the features influence conflict duration is more disputed \citep{Collier_Hoeffler_1998, Fearon_2004}. The most common implementation is to use a log transformed version of the country or grid population count\footnote{Though \cite{Collier_Hoeffler_1998} use the plain count in 10.000's} which is also implemented in the project at hand.\par
+
+%(Det er vel endnu mere relevant for gridded? større variation?)(det er også log den FS finder, så måske du skal smide den anden væk..)
+
+One very simple explanation might be the various definitions of conflict and civil war used throughout the litterature. These definitions almost always refer to some minimum fatalities count [eks and refs]. Naturally high population counts makes these threshold relativly less restrictive.\par
+
+There are however also more theoretical propositions for the relationship. One being that conflict mediation becomes inherently more difficult as social systems and societies grow \cite[p- 271-272]{Diamond_1998}.\par
+
+Initial I include features for cell-year population, aggregated country-year population and corresponding population densities:
+
+$$\textrm{grid\_pop\_dens} = \frac{\textrm{grid\_pop}}{\textrm{grid\_area}}$$
+
+$$\textrm{country\_pop\_dens} = \frac{\textrm{country\_pop}}{\textrm{country\_area}}$$
+
+Which leads to the last included interaction concerning excluded ethinic groups.\par 
+
+\subsection{Density of the Excluded - Interaction} %----------------------------------------------------------- 
+
+(excluded\_pop, excluded\_b\_pop) 
+
+One more drawn directly from \cite{Cederman_Gleditsch_Buhaug_2013} disaggregated study conserns the interaction between population size and group exclusion. the Auothors construct an interaction between the size of the cell population and their feature for excluded ethnicities \citep[73-78]{Cederman_Gleditsch_Buhaug_2013}. Assuming that the size of the excluded population is at least positively correlated with the total cell population this feature captures the density of the excluded population. 
+
+$$ \textrm{excluded\_b\_pop}  = \textrm{excluded\_binary} \times \textrm{cell\_pop}  $$
+
+The theoretical argument is simply that it is not larger population but larger excluded populations that drives the relationship between conflict and population size \citep[69-74]{Cederman_Gleditsch_Buhaug_2013}.
+
+\subsection{Geography and Accessibility} %------------------------------------------------------------------
+
+\paragraph{Accessibility} As noted earlier, a strong state have often been presented as the prime inhibitor of internal conflicts. Naturally though, the strength of state must be considered relative to the territory over which it claims sovereignty - both in regards to size and permeability. \cite{Fearon_Laitin_2003} pointed to rough terrain and mountains as natural obstacles hindering effective projection of state power. Following this example \cite{Hegre_Sambanis_2006} concludes that a feature for rough terrain is found to robustly positively correlated with civil war across a large number of model specifications.\cite[526-529]{Hegre_Sambanis_2006}\footnote{Though see \cite{Goldstone_2010}}. The Prio Grid includes a readily available feature measuring the proportion of mountainous terrain within the cell based on \cite{Blyth_2002} wich I utilize.\par
+
+Another natural hindering for projecting state power is sheer distance \citep{Fearon_2004, Buhaug_Gates_Lujala_2009, Cederman_Buhaug_Roed_2009, Buhaug_2010}. The argument is straight forward:
+
+%\cite{Buhaug_2010} : cap dist
+\begin{displayquote}
+
+\emph{"The projection of power across distance comes at a cost. [...] In particular, large hinterlands and isolated peripheries are favorable to insurgency. In sum, this suggests that large countries are relatively more exposed to intrastate conflict"}\cite[113-114]{Buhaug_2010}
+
+\end{displayquote}
+
+A number of interesting features could be derived from Buhuag's assertion above (and the paper in general). What I have included is the distance to the nations capital\footnote{The measure utilized by \cite{Buhaug_2010}}, the travel time to the nearest major city, and the total size of the country\cite{prio_code_2015}.
+
+%me: and also the grid cells are not the same size..
+
+
+\subsection{Trans-boarder Influences} %--------------------------------------------------------------------
+
+A number of different mechanism have been proposed and explored \citep[29-30]{Blattman_Miguel_2010}, the one explored here is rather simple and follows \cite{Hegre_Sambanis_2006} [TJEK IGEN!]. blabla
+
+Der er vel også lidt en tråd til Conflict dispersion....
+
+de to mål og hvorfor du inkoorporere begge.
+
+\paragraph{bdist1}  
+\paragraph{bdist3}
+
+% hvorfor samler du dem ikke bare i et mål? bare pluser dem sammen? 
+
+This is a very rough measure and is arguably a bit far removed from any specific theoretical concept, but for this preliminary project the measures will have to do.
+
+\subsection{Urban contra Rural Theater} %--------------------------------------------------------------------
+
+Ja, hvad er din teoritiske begrundelse her? går du tilbage til litteraturen om democratiske sammenbrud? Noget med at der er mere undertrykkelse i land områder hvilket leder? (Boix, Robinson, Acemogul...) Til grievences? Eller omvendt er det lettere at mobilisere i byerne?
+
+Det trækker også lidt på det accesability du har snakket om tidligere... Son of the soil..
+
+\paragraph{interp\_urban\_ih} her henter du også viden fra democratic breakdown lit.  
+\paragraph{interp\_agri\_ih}  her henter du også viden fra democratic breakdown lit.  og Skocpol
+
+
+\subsection{Prime Commodities and the Recourse course} %-----------------------------------------------------------
+
+først: prime comoditeis in general:
+\cite{Collier_Hoeffler_1998, Collier_Hoeffler_2004}
+
+find no impact of prime comm. \cite[76]{Fearon_Laitin_2003} does find inpact of oil \cite[84-86]{Fearon_Laitin_2003}
+
+
+Kikker videre på prime comm. \cite{Fearon_2005}, ( or Natural reasources) \cite{Ross_2004}
+
+Og sons of the soils \cite{Fearon_2004}, men så skulle du lave nogle interactioner med excluded..
+
+\cite{Buhaug_2010} Oil disaggregated
+
+As such, the soil feature here included is a binary indicator of whether oil is know to be available for extraction in a given cell at a given year. % (petroleum\_full). 
+
+\cite{Hegre_Oestby_Raleigh_2009} : also a bit on prime Comm
+
+
+
+
+\subsection{Inertia, dispersion, traps and time trends} %---------------------------------------------------------------
+
+%Havd gør du? Hvordan og hvornår bliver dette inkoorporet i modellen?
+
+Conflict, inertia, trap, conflict dispersion, time trends ect
+
+\cite{Collier_Hoeffler_2004} : linear DECAY term since last conflict.
+
+\cite{Goldstone_2010} : conflict ridden neighbourhood.
+
+\cite{Hegre_Sambanis_2006} : which we model as a DECAY function of time at peace
+
+"Among others, we include a decay function proxregc of the Polity
+durable variable, which measures the number of years since an institutional change
+that leads to a minimum of three points' change on the Polity index."
+
+"In a review of the quantitative literature on civil war, Sambanis
+(2002) identified the following three core variables that are almost always included
+in models of civil war onset: the natural log of population (Inpop), the length of
+peacetime until the outbreak of a war (pt8, which we model as a decay function of
+time at peace), and the natural log of per capita gross domestic product (GDP) in
+constant dollars (Ingdp)."
+
+%Neighbourhood effect of civil wars - right? Ud over spatial autocorrolation kan du modllere det på både lande og celle niveau - det vill fylde meget mind, men også smide meget information væk...
+
+%har også argumenter vedr. mange etniske grupper og faldende risiko for conflict... Og det har C og H 1998 jo også
+
+%også om hvorfor prediction er viktigt (p. 545) - se også Schrodt xxxx, Goldstone 2010 og Greenhill, Bakke et al.. XXXX
+
+%"The "neighborhood at war" (natwar) variable has robustly positive estimates for
+%both conflict variables, lending support to hypotheses regarding the significance of
+%diffusion and contagion effects in civil war"
+
+
+\cite{Cederman_Gleditsch_Buhaug_2013} Number of previous conflicts
+
+
+
+\subsection{Notable Absentees}\label{notable_absentees} %---------------------------------------------
+
+Notable missing: infant mort, political system and intra elite conflict... \citep{Goldstone_2010} Past conflicts (contry and cell level..) (conflict trapp, Coiller ect) ... Trans boarder thing.. Downgraded... \citep{Cederman_Gleditsch_Buhaug_2013}
+
+\cite[119-142]{Cederman_Gleditsch_Buhaug_2013}: Du har border, men måske er mekanismen ikke rigtigt specificeret. det er trans-boarder-ethnic-kin
+
+\cite{Goldstone_2010} : Infant mortality deviant from global mean, factionalisation (political system), state led discrimination (nej, den e rjo lidt med igennem excluded), conflict ridden neighbourhood(er med på celle basis gennem nearest ish). p: 
+
+
+\section{Data Handling and exploration}
+
+
+\section{Model Construction, Estimation and Results}
+
+
+\section{Future Challenges and Improvements}
+
+
+\section{Conclusion}
+
+% \section{Feature Selection}\label{feature_selection} % ----------------------------------------
+
+% \todo[inline]{ref til sequential feature selection; forward.}
+
+
+% \section{Bayesian Multi-level Model} % ----------------------------------------
+
+% \cite{Mcelreath_2018}, \cite{Gelman_2013}, \cite{Gelman_2006} 
+
+
+% (Also introducing further methods and the model specification)
+
+%Det faktum at der er tale om rare events gør heirarkiet uper relevatn. Du kan henvise til King and Zeng's baysiske correction men sige at du går full bayse i stedet. Bruger al information.
+
+
+%Modellen skal være todelt: først logistic og så poisson elller negative-binomial. Altså hoved tingen er dit hot spot kort; hvor er der størst sandsyndlighed for at se en eller flere conflict-fatalities? Her efter tager du de observationer (hvilket cut of?) og spørger; hvor mange fatalities for venter vi her at se. Det bliver netop interessant om der er en klar sammenhæng mellem "om" og "hvor mange". Det burde der være, men lad det være et empirisk spørgsmål.
+
+%Så du kikker ikke på individuelle variabler, men du kunne jo lave to kurve af variabler; ulighed vs. svag stat (ish) er se hvor meget hvar giver til modellen..
+
+%HUSK: FE er også problematisk når y er binær fordi alle opservationer hvor y er invariant smides væk (jf. Cederman, Buhaug, rød 2009)
+
+%Der er altså noget med onset og duranations (og ending). reelt skal du jo havde en model for celler hvor der ikke er konflikt; hvad er sandsyndligheden for at der opstår konflikt her? Og en model for celler med konflikt; hvad er sandsynligeden for at conflikten fortsætter?
+
+%Måske det kan løses med en variable for "conflict last year (timeperiode = on going konflict)"? Eller endnu bedre inkooprorere det i heirarkiet?
+
+%time since not-conflict?
+
+%Vedr. geografi (Buhuag Gates Lujala 2009) så er du fandeme fræk hvis du kan komme med en reference til art of war
+
+%Senere (ikke det her projekt) skal du sætte dig in i guirrilia og millitær taktikker... ellers kommer du ikke videre
+
+%Måske en zero inflated negative binomial model alligevel er bedre end en logit?...
+
+%Er der en interaktion mellem disttocap og disttoborder?
+
+%Celler < lande < ongoing/not ongoing som heirarki..
+%g eller bare ne variable for "time since peace". Men den variable kan jo både sættes som country og celle specific.
+
+%eller måske: Celler < lande < ongoing/not ongoing < ever had a conflict/never had a conflict...
+
+%for at finde ud af dit cut of for ongoing, kunne du jo lave out of smaple test.. Men du overfitter måske til data her no matter what...
+
+% \section{From Predictions to Causality}
+
+% \cite{King_Zeng_2001}, \cite[545]{Hegre_Sambanis_2006} ,\cite{Goldstone_2010}, \cite{Ward_Greenhill__Bakke_2010}, \cite{Schrodt_2014}, \cite[108-118,241-244,357]{Gelman_2013}, \cite[65-69]{Mcelreath_2018}.
+
+\pagebreak
+
+\section{Bibliography}
+\bibliographystyle{apalike} 
+\bibliography{conflict.bib}
+
+\pagebreak
+\section{Appendices}
+
+All scripts can be found on : \hyperlink{https://github.com/Polichinel/Conflict_Prediction}{https://github.com/Polichinel/Conflict\_Prediction}
+
+\subsection{Handling of missing:}\label{missing}
+
+\subsection{GCP and Night Light Emission}\label{GCP_corr}
+
+%\section{ref tjeck..}
+%\cite{Fearon_Laitin_2003}
+%\cite{Collier_Hoeffler_2004}
+%\cite{Fearon_2004}
+%\cite{Ross_2004}
+%\cite{Fearon_2005}
+%\cite{Hegre_Sambanis_2006}
+%\cite{Kalyvas_2007} % Hvad med den her? Den kan ellers bruges massere steder!!!
+%\cite{Vreeland_2008}  % Har du brugt den her? -> eller nævn i abseentess afsnitet
+%\cite{Cederman_Gleditsch_2009}
+%\cite{Cunningham_Gleditsch_Salehyan_2009}
+%\cite{Hegre_Oestby_Raleigh_2009}
+%\cite{Buhaug_Gates_Lujala_2009}
+%\cite{Cederman_Buhaug_Roed_2009}
+%\cite{Beardsley_McQuinn_2009} % Har du brugt den her?
+%\cite{Weidmann_2009}
+%\cite{Goldstone_2010}
+%\cite{Blattman_Miguel_2010}
+%\cite{Buhaug_2010}
+%\cite{Cederman_Weidmann_Gleditsch_2011}
+%\cite{Cederman_Gleditsch_Buhaug_2013} (only read the conclusion)
+
+\end{document}
