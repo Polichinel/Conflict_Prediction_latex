@@ -220,68 +220,40 @@ An important property induced by the approach being based on regression trees, i
 
 \subsubsection{Undersampling}
 
-While the boosting approach presented above is able to handle imbalanced problems, we can help it along by re-sampling our data to create a more balanced ratio between events and non-events. So called undersampliung \citep[1266-1267]{He_2008}. Different variants of this approach have been proposed as an general solution to the imbalance often challenges statistical research on international relations and conflict studies \cite{King_Zeng_2001, king_zeng_2001b}. The specific procedure employ here is called case-cohort sampling. Here i utilize all available events and a random subset of no-events \citep[142]{King_Zeng_2001}. Some trail and error showed that 20 times as many non-events as events yelled the best prediction efforts. This means that instead of events being 1\% of the data, events now constitute around 5\% of the data. Not a big difference, but enough to do the trick. The actually probabilities estimate are, however, inflated since the model thinks conflicts are less rare then is the actually case; this is corrected in the next section.\par
+While the boosting approach presented above is able to handle imbalanced problems, we can help it along by re-sampling our data to create a more balanced ratio between events and non-events. This is called undersampling \citep[1266-1267]{He_2008}. Different variants of this approach have been proposed as an general solution to the imbalance often challenges statistical research on international relations and conflict studies \cite{King_Zeng_2001, king_zeng_2001b}. The specific procedure employed here is called case-cohort sampling. Here one utilizes all available events from the training set along a random subset of no-events from the training set to construct the classifiers used \citep[142]{King_Zeng_2001}. Some trail and error showed that 20 times as many non-events as events yielded the best prediction results. This means that instead of events being 1\% of the data, events now constitute around 5\% of the data. Not a big difference, but enough to do the trick. The actually probabilities estimate are, however, inflated since the model thinks conflicts are less rare then is the actually case; this is corrected in the next section.\par
 
-Returning to the task at hand; Now while most of the information in the data is stored in the events and not the non-events \cite[139]{King_Zeng_2001}, some information is still lost by not using all non-events. The solution is to use a variant of 'informed undersampling'. To counter the inefficient use of information one can use an ensemble of classifiers all utilizing a new independent subset of non-events to combine with the subset of all available events \cite[1267]{He_2008}. This approach not only utilizes all information available, but also facilities the estimation of the uncertainty inherent in the prediction effort. that is, not only do I get an estimated probability I get also get an estimate of how reliable that probability is. The practical steps are simple; I run the same xgboost classifier 1000 times using a new subset of non-events drawn from the training set along all events present in the training set. Thus for all results derived from the framework,  predictions and evaluations metrics alike, I get a distribution of 1000 results effectively Constitution the probability distribution of the given results\footnote{Given the data and model specifications utilized of course}. For both the predictions and the evaluations metrics the mean of these distributions constitutes a more reliable and honest estimate of respectively the "true" risk of conflict and the "true" performance of the framework. Furthermore I also get estimates regarding the uncertainty of the predicted risk and the variance of the frameworks performance.\par
+Returning to the task at hand; Now while most of the information in the data is stored in the events and not the non-events \cite[139]{King_Zeng_2001}, some information is still lost by not using all non-events. The solution is to use a variant of 'informed undersampling'. To counter the inefficient use of information one can use an ensemble of classifiers all utilizing a new independent subset of non-events to combine with the subset of all available events \cite[1267]{He_2008}. This approach not only utilizes all information available, but also facilities the estimation of the uncertainty inherent in the prediction effort. that is, not only do I get an estimated probability I get also get an estimate of how reliable that probability is. The practical steps are simple; I run the same xgboost classifier 1000 times using a new independent subset of non-events drawn from the training set along all events present in the training set. Thus for all results derived from the framework,  predictions and evaluations metrics alike, I get a distribution of 1000 results effectively Constitution the probability distribution of the given results\footnote{Given the data and model specifications utilized of course}. For both the predictions and the evaluations metrics the mean of these distributions constitutes a more reliable and honest point estimate of respectively the "true" risk of conflict and the "true" performance of the framework. Furthermore I also get estimates regarding the uncertainty of the predicted risk and the variance of the frameworks performance.\par
 
+\subsubsection{Bayesian Prior Correction}
+%\todo[inline]{BAYESIAN CORRECTION TO COME - you're are still getting to many false positives...}
 
-%----------------------------------------------------------------------------------------------------------------------
-\cite{He_2008}
-\cite{King_Zeng_2001} % normalt undervurdere logit ol. sandsynligheden for et rare event; det er ikke tilfældet med dine estimationer
-% nearly 300,000 observations with zeros need not be
-% collected or could even be deleted with only a minor impact on substantive conclusions. 139
-% It
-% turns out that both sides have some of the right intuition: the real information in the data lies
-% much more with the ones than the zeros, but researchers must be careful to avoid selection
-% bias. Fortunately, the corrections are easy, and so the goals of both camps can be met.139
+A small issue with the undersampling procedure above is that the probabilities predicted is somewhat inflated. This does not as such hurt the prediction effort. This might seem counter intuitively, but since the probability threshold beyond which we denote a observation to be a conflict can be chosen at will, it is the ratio between such threshold and the probabilities that. Not one or the other. To illustrate: normally one would set a threshold at 50\%. If the probability of conflict is above 50\% we predict a conflict and if it is below we do not predict a conflict. This threshold, while conventional, is entirely arbitrary and for some purposes it might well make more sense to set the threshold at 20\% or 80\%. Thus knowing that my estimates are inflated do to undersampling I could just easily set my threshold a bit higher then normal, say at 60 or even 80\%. However, I aim to not implement any hard threshold but instead presents the actual probabilities and their certainty for reader to survey. As such, for these probabilities to be intuitively meaningful they need to match what we actually know regarding the propensity of conflict events. This is easily implemented with an Bayesian prior correction\footnote{Related to what is presented in \cite{King_Zeng_2001, king_zeng_2001b} and \cite{Goldstone_2010}}. Denoting the the estimated probabilities of an event $Pr(E_{estimated})$, estimated probabilities of a non-event $Pr(NE_{estimated})$ the  and the corrected probabilities of events as $Pr(E_{corrected})$ the correction is as follows:
 
+$$
+Pr(E_{corrected}) = \frac{Pr(E_{estimated}) \times 0.2}{(Pr(E_{estimated}) \times 0.2)+(Pr(NE_{estimated} \times 0.8)}
+$$
 
-
-% his is known in
-% econometrics as choice-based or endogenous stratified sampling and in epidemiology as a
-% case-control design (Breslow 1996);
-% The strategy is to select on Y by collecting observations
-% (randomly or all those available) for which Y = 1 (the “cases”) and a random selection of
-% observations for which Y = 0 (the “controls”). This sampling method is often supplemented
-% with known or estimated prior knowledge of the population fractions of ones—information
-% that is often available (e.g., a list of all wars is often readily available even when explanatory
-% variables measured at the dyadic level are not)142
-
-% Finally, case-cohort studies begin with some
-% variables collected on a large cohort, and then subsample using all the ones and a random
-% selection of zeros. The case-cohort study is especially appropriate when adding an expensive
-% variable to an existing collection, such as the dyadic data discussed above and analyzed
-% below, or Verba and co-workers’ (1995) detailed study of activists, each of which was culled
-% from a larger random sample, with very few variables, of the entire U.S. population. In this
-% paper, we use information on the population fraction of ones when it is available, and so
-% the same models we describe apply to both case-control and case-cohort studies142
-
-% Prior correction involves computing the usual logistic regression MLE and correcting the
-% estimates based on prior information about the fraction of ones in the population, τ , and
-% the observed fraction of ones in the sample (or sampling probability), ȳ. Knowledge of τ
-% can come from census data, a random sample from the population measuring Y only, a
-% case-cohort sample, or other sources.144
-
-% Prior correction requires knowledge of the fraction of ones in the population, τ .144
-
-%----------------------------------------------------------------------------------------------------------------------------
-An other instrument in combating the imbalancedness of the data is simply to only utilize a portion of the non-events; undersampling. On could naturally undersample to the extent that the dataset becomes completely balanced. In the present case this leads to a number of problem, not least to many false positives. Naturally one could just raise the threshold for classifying an observation as an event. However, I found that to many observations where given very high probability of conflict leading to a bimodal distribution where I would have expected something more akin to a power distribution.\par % see SOME FIGURE\par
-
-Some trail and error lead me to use 20 times as many non-events as events. This means that instead of events being 1\% of the data, events now constitute around 5\% of the data. Not a big difference, but enough to do the trick. The portion of non-events is randomly chosen which of course leads to a lot of information not being used in the estimations. The next subsection illustrate how I amend this.\par
-
-%\subsubsection{Predictive Sampling}
-
-Now, the undersampling step above leads to a random element in the process; I do not choose which non-events to utilize for the prediction effort. Further more the xgboost framework does itself include a number of stochastic elements; some randomness goes into choosing the exact candidates for splits and thus you will not get the exact same model each time unless you specify a random seed for the model. 
-
-
-An approach which utilizes both these elements of randomness to our advantage is to create a distribution of predictions rather the simply a single prediction for each observation in the test-set. As such, I estimate 1000 xgboost models\todo{At the moment only 100 are used for the plots below}, each including the same events - all events in the training set - and a random sample of non-events 20 times bigger also drawn from the trainingset. Thus for all results derived from the model, estimations, predictions and metrics, I get a distribution of results. That is, I do not get one prediction for each cell; I get 1000 together forming a distribution of predictions for each cell. Likewise I do not get one final metric, e.g. AUC, recall or AP, score but 1000 forming distribution for each metric. for both the predictions and the metrics the mean of these distributions constitutes a more reliable estimate of respectively the "true" risk of conflict and the "true" performance of the framework. Furthermore I also get estimates regarding the uncertainty of the predicted conflict risk and the variance of the frameworks performance.\par
-
-\subsubsection{Bayesian Correction}
-\todo[inline]{BAYESIAN CORRECTION TO COME - you're are still getting to many false positives...}
+Where 0.2 is the prior, which here is the factor between the undersampled ratio of events of non-events and the actual ratio between events and non events. 0.8 is simply $1-prior$. The correction is a very crude utilization of Bayes theorem \citep[7-8]{Gelman_2013}, and could be much improved. Evenmore it is only semi-Bayesian since I use hard priors - scalars - instead of some appropriate distribution. A fruitful approach might also be to create cell, country or region specific priors possible in some hierarchical setting. This however is a challenge for an other endeavour. For now the crude correction will do. and as sown in \autoref{bayes_correction} it does rather well.\par
 
 \subsection{Evaluation}
 
+\todo[inline]{Så bertal siger kun recall adn Prsision}
+
 For the evaluation I use a number of metrics; AUC, AP, recall, precision and accuracy. Presenting this rather broad roster of metrics serves neither elegance nor simplicity. It does however serve transparency, honesty and highlighting of the frameworks strengths and weaknesses.
+
+\cite[1277]{He_2008}
+
+$$
+recall = \frac{TP}{TP+FP}
+$$
+
+$$
+precision = \frac{TP}{TP+FN}
+$$
+
+precision recall curve \cite[1278]{He_2008}
+
+
 
 \todo[inline]{Naturraly more text will accompany this section. For now here are just some plots of the results to discuss Thursday}
 
@@ -647,6 +619,8 @@ Notable missing: infant mort, political system and intra elite conflict... \cite
 \subsection{GCP and Night Light Emission}\label{GCP_corr}
 
 
+
+\subsection{Difference Between Probabilities Before and After Bayesian Correction}\label{bayes_correction}
 
 %\section{ref tjeck..}
 %\cite{Fearon_Laitin_2003}
