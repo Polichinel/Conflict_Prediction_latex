@@ -8,6 +8,7 @@
 
 \usepackage{natbib}% better citation
 \usepackage{hyperref} %autoref
+\usepackage{amsmath} % for \tag and \eqref macros in mathematical eq.
 
 %% Sets linestretch, paragraphstrech, indentation and footnote stuff 
 \usepackage{parskip} %space between paragraphs
@@ -229,97 +230,86 @@ Returning to the task at hand; Now while most of the information in the data is 
 
 A small issue with the undersampling procedure above is that the probabilities predicted is somewhat inflated. This does not as such hurt the prediction effort. This might seem counter intuitively, but since the probability threshold beyond which we denote a observation to be a conflict can be chosen at will, it is the ratio between such threshold and the probabilities that. Not one or the other. To illustrate: normally one would set a threshold at 50\%. If the probability of conflict is above 50\% we predict a conflict and if it is below we do not predict a conflict. This threshold, while conventional, is entirely arbitrary and for some purposes it might well make more sense to set the threshold at 20\% or 80\%. Thus knowing that my estimates are inflated do to undersampling I could just easily set my threshold a bit higher then normal, say at 60 or even 80\%. However, I aim to not implement any hard threshold but instead presents the actual probabilities and their certainty for reader to survey. As such, for these probabilities to be intuitively meaningful they need to match what we actually know regarding the propensity of conflict events. This is easily implemented with an Bayesian prior correction\footnote{Related to what is presented in \cite{King_Zeng_2001, king_zeng_2001b} and \cite{Goldstone_2010}}. Denoting the the estimated probabilities of an event $Pr(E_{estimated})$, estimated probabilities of a non-event $Pr(NE_{estimated})$ the  and the corrected probabilities of events as $Pr(E_{corrected})$ the correction is as follows:
 
-$$
-Pr(E_{corrected}) = \frac{Pr(E_{estimated}) \times 0.2}{(Pr(E_{estimated}) \times 0.2)+(Pr(NE_{estimated} \times 0.8)}
-$$
+\[
+Pr(E_{corrected}) = \frac{Pr(E_{estimated}) \times 0.2}{(Pr(E_{estimated}) \times 0.2)+(Pr(NE_{estimated} \times 0.8)} \tag{1} \label{eq:bayes}
+\]
 
-Where 0.2 is the prior, which here is the factor between the undersampled ratio of events of non-events and the actual ratio between events and non events. 0.8 is simply $1-prior$. The correction is a very crude utilization of Bayes theorem \citep[7-8]{Gelman_2013}, and could be much improved. Evenmore it is only semi-Bayesian since I use hard priors - scalars - instead of some appropriate distribution. A fruitful approach might also be to create cell, country or region specific priors possible in some hierarchical setting. This however is a challenge for an other endeavour. For now the crude correction will do. and as sown in \autoref{bayes_correction} it does rather well.\par
+Where 0.2 is the prior, which is here set as the factor between the under sampled ratio of events of non-events and the actual ratio between events and non events. 0.8 is simply $1-prior$. The correction is a very crude utilization of Bayes theorem \citep[7-8]{Gelman_2013}, and could be much improved. Even more it is only semi-Bayesian since I use hard priors - scalars - instead of some appropriate distribution. A fruitful approach might also be to create cell, country or region specific priors possible in some hierarchical setting. This however is a challenge for an other endeavour. For now the crude correction will do - and as sown in \autoref{bayes_correction} it does rather well.\par
 
-\subsection{Evaluation}
+\subsection{Evaluating the Framework}
+In the following section I evaluate the predictive capabilities of the framework presented above. As many political and social scientist less familiar with with prediction problems then they are with parameter estimation I reserve the first subsection below to present the evaluation criteria and metrics'. This is followed by the actual evaluations. Understanding the utilized metrics and the implications of the results is crucial if we are to correctly understand the strengths and weaknesses of the framework here presented and further discus future improvements.\par
 
-\todo[inline]{Så bertal siger kun recall adn Prsision}
+\subsection{The Evaluation Metrics}
 
-For the evaluation I use a number of metrics; AUC, AP, recall, precision and accuracy. Presenting this rather broad roster of metrics serves neither elegance nor simplicity. It does however serve transparency, honesty and highlighting of the frameworks strengths and weaknesses.
+There exist a plethora of different evaluation metrics designed to convey the performance of a given framework. Some of the most used metrics are "accuracy", "Receiver Operating Characteristic" curve and the related measure "Area Under the Curve" (AUC) scores. While accuracy is intuitively meaningful and the ROC/AUC score has been coined as a "gold-standard" \citep[366]{perry_2013} appropriate for imbalanced data\citep[1277-1278]{He_2008} these measures also have some inherent limitation om regards to the specific problem at hand. Accuracy is not very suited for imbalanced data \citep[1264]{He_2008} and furthermore conventional demands a hard threshold to be defined. The the ROC/AUC score does not set a hard threshold, but it does tend to judge performance on highly imbalanced data too favorable \citep[1278]{He_2008}. Furthermore while the ROC/AUC does have an substantial interpretation, it is easily conveyed. For transparency the curious reader will find these metrics in the appendix, \autoref{app_metrics}. Going forward I instead utilized the two metrics "Recall" and "Precision" along two closely related ratio metrics; the "Recall-Precision Curve" and the "Average Precision Rate". These measures are suitable for imbalanced data, have an substantial and conveyable interpretation and judges the present framework appropriately honest and harsh \cite[1278]{He_2008}.
 
-\cite[1277]{He_2008}
+Denoting "True Positives" TP, "False Posits" FP and "False Negatives", recall and precision are defined as follows\footnote{All mathematical definitions below are sourced from an article from \cite{He_2008}, but most of them can be found in any standard machine learning text book, such as \cite{Friedman_2001}.}:
 
-$$
-recall = \frac{TP}{TP+FP}
-$$
+\[
+precision = \frac{TP}{TP+FP} \tag{2} \label{eq:recall}
+\]
 
-$$
-precision = \frac{TP}{TP+FN}
-$$
+\[
+recall = \frac{TP}{TP+FN} \tag{3} \label{eq:precision}
+\]
 
-precision recall curve \cite[1278]{He_2008}
+As such both scores are ratios which takes a value between 0 and 1. Intuitively, precision is the ratio between correctly predicted events and all predicted events. It tells us how many of the events we predict actually turns out to be events. Recall is the other side of the coin. It is the ratio between the correctly predicted events and all true events. It denotes how many of the true events our framework actually identifies. As seen in equation \ref{eq:recall} and \ref{eq:precision} above, more false negatives results in a lower recall score. More false positives results in a lower precision score. This is exactly the information needed to accurately evaluate the highly imbalanced data of rare events. Through these metrics we learn how many of the actual rare events we are able to capture, and how many non-events we incorrectly classify as events in the process.\par 
 
+Naturally, deriving false positives and false negatives demands that I binarize the obtained probability according to some threshold - which I already deemed imprudent. The solution is a "Precision-Recall Curve". This approach circumvents the problem by generating the ratio between recall and precision at all possible thresholds. This ratio is then easily conveyed visual as curve representing the tread-off between recall and precision and any possible thresholds \cite[1278]{He_2008}. Furthermore the curve it self can be summarized by the "Average Precision" (AP) score. This score denotes the weighted mean of the precision achieved at each possible threshold, where the weighting is the increase in recall from the previous threshold. Denoting recall $R$, precision $P$, and the different threshold as $n$ the AP score can be calculated as follows:\par
 
+\[
+AP = \sum_n (R_n-R_{n-1})P_n \tag{4} \label{eq:ap}
+\]
 
-\todo[inline]{Naturraly more text will accompany this section. For now here are just some plots of the results to discuss Thursday}
+The AP score is a convenient summary and will serve to evaluate the uncertainty associated the framework's predictive capabilities. Unfortunately it conveys less intuitive meaning then recall and precision disaggregated. However, it can be thought of as approximately the precision (and recall) score one would achieve if one where to set a threshold aimed at balancing the two metrics equally.\todo[inline]{ikke rigtigt dog..}\par
 
-\begin{figure}[!htb]
-	\centering
-	\includegraphics[scale=0.4]{auc_out_20.pdf}
-    \caption{\footnotesize{auc from 100 models}}%\label{}
-\end{figure}
+Having presented the backdrop against which the framework will be judged, the next subsection presents the derived results and evaluations.\par
 
+\subsection{The Evaluation}
 
-
-\begin{figure}[!htb]
-	\centering
-	\includegraphics[scale=0.4]{ap_out_20.pdf}
-    \caption{\footnotesize{Avarege Precision (presicion-recall rate) from 100 models}}%\label{}
-\end{figure}
-
+\todo[inline]{META}
 
 \begin{figure}[!htb]
 	\centering
-	\includegraphics[scale=0.4]{recall_prec_out_20.pdf}
-    \caption{\footnotesize{Precision and recall at various thresholds from 100 models}}%\label{}
+	\includegraphics[scale=0.5]{pr_curve.pdf}
+    \caption{\footnotesize{The credibility interval is plotted using only 100 random models for computational efficiency and no substantial changes comes from using all 1000. The reported credibility interval are based on all 1000 models. The point estimate (mean) reported and visualized are both derived on basis of all 1000 models}}\label{recall_precision_curve}
 \end{figure}
 
+As seen in \autoref{recall_precision_curve} there is a clear tread-off between recall and precision. Lower thresholds allows the framework to identify more true positives (less false negatives) but at the expense of more false positives. Thus moving out of the x-axis recall increases as precision drops. It is also clear that the models performance varies a great deal at the very high threshold levels\todo{Hvad tænker du om det?}. The same information is conveyed in \autoref{threshold_plot}, here simply at different marginal specific thresholds. 
 
 \begin{figure}[!htb]
 	\centering
-	\includegraphics[scale=0.4]{prc_out_20.pdf}
-    \caption{\footnotesize{Precision/Recall curve from a random model}}%\label{}
+	\includegraphics[scale=0.5]{threshold_plot.pdf}
+    \caption{\footnotesize{}}\label{threshold_plot}
 \end{figure}
 
+Again we see the inverse relationship and the increased variance with higher thresholds. More over this plot gives us some substantial answers. For example; if we where to set a threshold denoting any PRIO grid with a probability of conflict above 10\% as a potential conflict zone, we would correctly identify 77.1\% present of next years conflicts. The tread-of is that these correctly identified events only constitute 27.7\% of the events predicted to have above 10\% risk of conflict. That is; our framework here generates around two false positives for each true positives.\par
 
-\begin{figure}[!htb]
-	\centering
-	\includegraphics[scale=0.4]{roc_out_20.pdf}
-    \caption{\footnotesize{ROC curve from a random model}}%\label{}
-\end{figure}
-
-\begin{figure}[!htb]
-	\centering
-	\includegraphics[scale=0.4]{feature_imp_out_20.pdf}
-    \caption{\footnotesize{Feature importance across the 100 models}}%\label{}
-\end{figure}
-
-\begin{figure}[!htb]
-	\centering
-	\includegraphics[scale=0.4]{conflicts_2007.pdf}
-    \caption{\footnotesize{Conflicts (binary) 2007}}%\label{}
-\end{figure}
-
-\begin{figure}[!htb]
-	\centering
-	\includegraphics[scale=0.4]{log_conflicts_2007.pdf}
-    \caption{\footnotesize{Fatalities (logged) 2007}}%\label{}
-\end{figure}
-
-\begin{figure}[!htb]
-	\centering
-	\includegraphics[scale=0.4]{pred_prob_conflicts_2007.pdf}
-    \caption{\footnotesize{predicted probability of conflict 2007 - as seen we still need the bayesian correction or set the htreshold higer then 50..}}%\label{}
-\end{figure}
+Now, it is worth remembering the the grid cells in question are relatively small and does not correspond to any salient political, cultural or geographical distinction. It is merely squares. The point is that predicting the exact cell is a vary hard case, and we can hardly hope to know exactly which of two neighbouring cells with high risk of conflict will actually experience conflict. And even if one experience conflict and the other does not, it does not mean that the risk was not real in both cases. To illustrate my point \autoref{} illustrate all conflicts observed in 2007 versus the predicted probabilities for the same year:\par
 
 
-\pagebreak
+
+Maps.. Nepal
+
+
+\subsection{Feature Importance}
+
+
+
+
 
 \section{Future Challenges and Improvements}
+\todo[inline]{TO COME}
+
+
+\subsection(Balancing the Future)
+Initial test showed that the framework did much better if the test data had been balanced according with the train data. Naturally, such a test is only possible because we do have the actually conflict data of the testset; which of course does not match any practical real world scenario. We could however take some precautions. For one thing we know from the proceeding section that the best predictors are related to the temporal and spatial proximity of past and present conflicts. Thus if New Zealand where to experience conflict next year do to some very unforeseen development, the framework would most likely not be able to capture it. With this in mind we could weed out all countries which have never experienced any conflicts in our data sample and which are also relatively far from any ongoing conflict. This would, with all probability, reduce the number of non-events substantially thus making the incoming data less imbalanced. Since we would not expect the framework to capture any conflict onset in the discarded grid cells anyway, the tread-off might be negligible.\par
+
+\subsection(Unified Temporal-Spatial Approach)
+\todo[inline]{TO COME}
+
+
+\subsection{Sentiment Analysis}
 \todo[inline]{TO COME}
 
 
@@ -621,6 +611,9 @@ Notable missing: infant mort, political system and intra elite conflict... \cite
 
 
 \subsection{Difference Between Probabilities Before and After Bayesian Correction}\label{bayes_correction}
+
+
+\subsection{Accuracy, ROC and AUC}\label{app_metrics}
 
 %\section{ref tjeck..}
 %\cite{Fearon_Laitin_2003}
