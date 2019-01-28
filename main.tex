@@ -275,7 +275,7 @@ Having presented the backdrop against which the framework will be judged, the ne
     \caption{\footnotesize{The credibility interval is plotted using only 100 random models for computational efficiency and no substantial changes comes from using all 1000. The reported credibility interval are based on all 1000 models. The point estimate (mean) reported and visualized are both derived on basis of all 1000 models}}\label{recall_precision_curve}
 \end{figure}
 
-As seen in \autoref{recall_precision_curve} there is a clear tread-off between recall and precision. Lower thresholds allows the framework to identify more true positives (less false negatives) but at the expense of more false positives. Thus moving out of the x-axis recall increases as precision drops. It is also clear that the models performance varies a great deal at the very high threshold levels\todo{Hvad tænker du om det?}. The same information is conveyed in \autoref{threshold_plot}, here simply at different marginal specific thresholds. 
+As seen in \autoref{recall_precision_curve} there is a clear tread-off between recall and precision. Lower thresholds allows the framework to identify more true positives (less false negatives) but at the expense of more false positives. Thus moving out of the x-axis recall increases as precision drops. It is also clear that the models performance varies a great deal at the very high threshold levels\todo{Ved higher thresholds er der mere usikkerhed - måskyldes flere relativt FP i fohold til TP. En af grundene kan være den iboende usikkerhed der ligger i precist hvilken celler en konflict opstår i ud af de celler de er meget udsatte. Det er ved de høje thresholds moddellerne bliver uegnige om hvad der er TP og FP. Der er altså stor forskel på hvordan de mest risikable konflicter bliver vurderet på tværs af modellerne}. The same information is conveyed in \autoref{threshold_plot}, here simply at different marginal specific thresholds. 
 
 \begin{figure}[!htb]
 	\centering
@@ -287,33 +287,71 @@ Again we see the inverse relationship and the increased variance with higher thr
 
 Now, it is worth remembering the the grid cells in question are relatively small and does not correspond to any salient political, cultural or geographical distinction. It is merely squares. The point is that predicting the exact cell is a vary hard case, and we can hardly hope to know exactly which of two neighbouring cells with high risk of conflict will actually experience conflict. And even if one experience conflict and the other does not, it does not mean that the risk was not real in both cases. To illustrate my point \autoref{} illustrate all conflicts observed in 2007 versus the predicted probabilities for the same year:\par
 
+\begin{figure}[!htb]%[!tbp]
+  \centering
+  \begin{minipage}[b]{1\textwidth}
+    \includegraphics[width=\textwidth]{conflicts_2007.pdf}
+    \caption{\footnotesize{Conflicts observed in 2007 by UCDP aggregated at PRIO grid cell level. The measure is binary, with yellow denoting one or more conflicts in the given cell. Afghanistan, Iraq, Turkmenistan, Georgia and Zimbabwe are missing due to the coding rules of UCDP.}}\label{true_conf}
+  \end{minipage}
+  \\	
+  \begin{minipage}[b]{1\textwidth}
+    \includegraphics[width=\textwidth]{pred_prob_conflicts_2007_bayes.pdf}
+    \caption{\footnotesize{The estimate probability (prior corrected) of conflicts in 2007 using data from 2006 and the model trained on data from 1990 through 2005. The measure is between 0 and 1, where a 1 would denote certain conflict and be colored bright yellow as in \autoref{true_conf}. Afghanistan, Iraq, Turkmenistan, Georgia and Zimbabwe are missing due to the coding rules of UCDP.}}\label{pred_conf_b}
+  \end{minipage}
+\end{figure}
 
-
-Maps.. Nepal
-
+The maps presented in \autoref{true_conf} and \autoref{pred_conf_b} clearly illustrates the frameworks potential - but also some of its challenges. It is clear to see that - for the most part - the areas deemed most probable of experiencing conflict, where also generally where conflict ensued. Naturally the predicted risk zones encompasses larger areas then the actual conflict zones, but this merely captures the uncertainty inherent in the task; we can hard expect to know all the exact determinants separating which high risk zones actually end up experiencing conflict and which does not. What is more problematic is more systematic mistakes. Taking the year 2007 as a example the high predicted probability of conflicts throughout Nepal constitute a clear mistake; there was no conflict death in Nepal in 2007. The mistake a product of the predictive framework - or indeed my construction of the framework. I ask my framework to present the probability of conflicts given the features presented earlier and that is what it does. However, none of the included features a able to capture sudden peace agreements or ceasefires - which is exactly what happens 21. November 2006 in Nepal \citep{ohchr2012nepal}. Thus what my model is presenting is at best a counter factual statement; the probability of conflict across Nepal if the peace accord had not been concluded. The point is that framework is insensitive to sudden changes and developments in the political processes surround the conflicts and the sentiment among the warring parties. As I will discuss further down, this is crucial insight going forward towards a more accurate framework. However, before we come to that the following section explores why the framework fails in e.g. the Nepalese case by analyzing which features the framework relied most heavily on.\par
 
 \subsection{Feature Importance}
 
+\begin{figure}[!htb]
+	\centering
+	\includegraphics[scale=0.5]{feature_imp.pdf}
+    \caption{\footnotesize{The relative importance of the included features given the use of the xgboost algorithm. Information from all 1000 models included. "Gain" denotes the internal optimization metric which the xgboost algorithm utilizes when choosing where best to split the generated regression tress.}}\label{feature_imp_plot}
+\end{figure}
 
+Looking at the top five most important features in \autoref{feature_imp_plot} four are directly related to ongoing or past conflicts, and the feature denoting distance to nearest conflict is by far the most influential predictor. More theoretical features pertaining to the greed versus grievance debate does not contribute with much prediction power, once we included features modeling the temporal/spatial conflict pattern in it self. Intuitively this might not be surprising, yet the conventional literature - on prediction and parameter estimation alike - appears more occupied with scrutinizing greed and grievance related features. Naturally, the literature sometimes do include some measure of temporal/spatial dependency and dispersion is often included, but these measures are often crude and ad hoc - in which regard the present endeavour is no different. Naturally I shall return to this matter in the discussion on future improvements.\par
 
+The question regarding Nepal is also neatly answered be the results in \autoref{feature_imp_plot}. The framework gets almost all of its predictive power through past and present conflict patterns. To capture political events such as peace treaties we need to included an altogether different types of features; features able of capturing sudden changes in the political development and sentiment in the given region or country. A proposal is naturally presented in the discussion below, which I turn to now.\par
 
+\todo[inline]{Robustness; onset.}
 
 \section{Future Challenges and Improvements}
-\todo[inline]{TO COME}
 
+Having assessed the predictive capabilities of the framework I find three obvious avenues for improvement: an even better handling of the imbalanced data; a better, unified approach to the temporal/spatial inertia and dispersion of conflict and the inclusion of features capturing more sudden political developments. These three avenues will be discussed in-turn in the following subsections, after which proceed to the summative conclusion.
 
-\subsection(Balancing the Future)
-Initial test showed that the framework did much better if the test data had been balanced according with the train data. Naturally, such a test is only possible because we do have the actually conflict data of the testset; which of course does not match any practical real world scenario. We could however take some precautions. For one thing we know from the proceeding section that the best predictors are related to the temporal and spatial proximity of past and present conflicts. Thus if New Zealand where to experience conflict next year do to some very unforeseen development, the framework would most likely not be able to capture it. With this in mind we could weed out all countries which have never experienced any conflicts in our data sample and which are also relatively far from any ongoing conflict. This would, with all probability, reduce the number of non-events substantially thus making the incoming data less imbalanced. Since we would not expect the framework to capture any conflict onset in the discarded grid cells anyway, the tread-off might be negligible.\par
+\subsection{Balancing the Future}
+Initial test showed that the framework did much better if the test data had been balanced in accordance with the train data. Naturally, such a test is only possible because we do have the actually conflict data of the test-set; which of course does not match any practical real world scenario. We could however take some precautions. For one thing we know from the proceeding section that the best predictors are related to the temporal and spatial proximity of past and present conflicts. Thus if New Zealand where to experience conflict next year do to some very unforeseen development, the framework would most likely not be able to capture it. With this in mind we could weed out all countries which have never experienced any conflicts in our data sample and which are also relatively far from any ongoing conflict. This would, with all probability, reduce the number of non-events substantially thus making the incoming data less imbalanced. Since we would not expect the framework to capture any conflict onset in the discarded grid cells anyway, the tread-off might be negligible.\par
 
-\subsection(Unified Temporal-Spatial Approach)
-\todo[inline]{TO COME}
+An other similar solutions would be a "zero-inflated" framework with two rounds or more rounds of estimations. The first round would correspond the the present endeavour. The second round would only include cells with a predicted probability over some appropriate minimum threshold e.g. 1\% and so on. This is more computational burdensome then simply sorting by country, but it might also be more powerful.\par  
 
+\subsection{A Unified Temporal-Spatial Approach}
 
-\subsection{Sentiment Analysis}
-\todo[inline]{TO COME}
+Temporal and spatial dependency, inertia and dispersion can by modeled in countless ways. COnserning the temporal demension most efforts have included some sort of fixed, random or conditional effects, but also more cleaver modeling of "conflict traps" and "conflict induced grievances" \citep{Collier_Hoeffler_2004, Hegre_Sambanis_2006, Cederman_Gleditsch_Buhaug_2013, perry_2013}. While these efforts are commendable, they all appears as ad hoc solutions. An example is \cite{perry_2013} purpose are "time deteriorating index" where one would include the number of fatalities for each of the last ten years as features. The trick is then to down-weight the fatalities by dividing with the number of years past. Thus a feature pertaining to fatalities two years ago will have as its values half of the fatalities observed that year\cite[14]{perry_2013}. While the heart is at the right place there is no real reason to cap the effort at ten years. Even more there is no theoretical or practical reason to choose the suggested deterioration rate. Instead of dividing with years past it might be more appropriate to multiply by 0.8 or 0.4; or the deterioration rate might have an altogether different fictional form like an exponential decay function. The point is that we do not know, and therefor we should estimate and not guess. Not least since estimation at least give us an indication of how bad our guess is. Further more estimation would allow different regions, countries or cells to have different rates of conflict deterioration. I shall not go into the technical details here, but the machine learning technique of Gaussian Processes have been used to just this purpose with good results before \citep{Gelman_2013, Mcelreath_2018}. Furthermore Gaussian Processes also facilitates forecasting more readily, without the need to construct specific lags or leads in various features as done in the present project. Again, it is hard to go into specifics without being technical, but in such a framework one could decide, post-modeling, whether one wanted estimates for next year, the year aften or ten years ahead. Even more the procedure also estimates the uncertainty which inherently grows as we look into the future.\par
+ 
+Turning to the spatial aspect, I conveniently find that the same tools also have shown very good results in regards to geospatial dispersion, where both regional and country\footnote{Or indeed any other geographical unit} specific variation is readily incorporated \citep{gelfand2003spatial, gelfand2012hierarchical, gelfand2016spatial}. The fact the both the temporal and spatial patterns have potential of being modelled according to a unified approach is both piratical and encouraging.\par
 
+To clarify, I do \emph{not} propose to swap the xgboost algorithm used above white a new machine learning algorithm; I am suggesting that one could use the proposed techniques to create better features pertaining to the temporal and spatial patterns of conflict. Features which then could be fed some framework utilizing xgboost.\par
+
+A less technical but just as important point is that modelling conflicts as a spatial/temporal function of conflict itself only requires the UCDP\footnote{Or any other relevant data source on conflicts}  conflict data. As motioned in the beginning of this endeavour the UCPD data is substantially more up-to-data compared to the PRIO grid data. And indeed structural data such as that presented in the PRIO database are rarely available for the most resent years whatever the source. Thus, having learned the our model also gets most of its predictive power from the UCPD itself, it seems only natural that any future effort explore the potential in predicting conflict using this database as the primary feature-source.\par
+
+While I do believe this approach holds great promise for future endeavours, it would not change the challenge exemplified by Nepal 2007. The next subsection will present a potential solution to this shortcoming.\par
+
+\subsection{Large Scale Automated Text Analysis}
+
+The most simple and straight forward way to know whether some ceasefire, is to know whether or not the warring parties are discussion a ceasefire. And furthermore whether nor not the public and political sentiment appears to favour a potential ceasefire. To have this knowledge regarding one specific country is trivial. To have this knowledge regarding all countries collected as  processable data regularly and reliably updated is an effort; but it is not impossible. Tools and approaches for large scale automated text analysis gets evermore accessible and powerful. And specifically automated text analysis utilized on online news sources have already shown great promise in tasks of conflict prediction \citep{chadefaux_2014, mueller_2016}. 
+
+One could enhance our feature-space with new information pertaining to the political or public sentiment in various countries or regions by scraping large amount of text data from social media, news sources or political outlets. Not only would such features potentially amend the problem exemplified by Nepal 2007; more importantly it could help predict onsets in otherwise peacefully areas \cite{mueller_2016}. Given that the presented framework relies mostly on present and previous conflict patterns, it would no doubt be challenged if it where to predict such onsets; far removed from any other conflicts in both space and time. A framework incorporating analysis of text from news sources, social media and political outlets would no doubt bring valuable new power to the prediction effort.\par
+
+The tread-of is naturally that such an effort is vastly more resource demanding then the two other remedies proposed. The amount of data one would need to process would be staggering. And even with access to ample resources one might be able to obtain country-specific information, but more disaggregated data would be a non-trivial task to obtain. Never-the-less, \cite{mueller_2016} show one way to do it, and with the pace of the present technological development it is surely not an impossible task.\par 
+
+This concludes the discussion regarding future improvements of the framework. The following section will summarize the endeavors main points and conclude on the project as a whole.\par
 
 \section{Conclusion}
+
+Conflicts can be things of inertia and stubbornness, moving through countries often more like glaciers the wildfire.
+
+
 \todo[inline]{TO COME}
 
 % \section{Feature Selection}\label{feature_selection} % ----------------------------------------
