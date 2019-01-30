@@ -195,7 +195,7 @@ In the following subsections, I evaluate the predictive capabilities of the fram
 
 \subsection{The Evaluation Metrics}
 
-While many metrics are available, the most commonly known and utilized are probably "accuracy", "Receiver Operating Characteristic" curve and the related measure "Area Under the Curve" (AUC) scores. While accuracy is intuitively meaningful and the ROC/AUC score has been coined as a "gold-standard" \citep[366]{perry_2013} appropriate for task where hard thresholds are imprudent\citep[1277-1278]{He_2008}, these measures also have some inherent limitations in regards to the specific problem at hand. Accuracy is not very suited for imbalanced data \citep[1264]{He_2008} and furthermore is usually implemented with a hard threshold. The ROC/AUC score does not demand any hard threshold, but it does tend to judge performance on highly imbalanced data too favorable \citep[1278]{He_2008}. Even more, while the ROC/AUC has a substantial interpretation, it is not easily conveyed. For transparency, the curious reader will find these metrics in the appendix, \autoref{app_metrics}. Going forward, I instead report the two metrics "Recall" and "Precision" along two closely related ratio metrics; the "Recall-Precision Curve" and the "Average Precision Rate". These measures are suitable for imbalanced data; have a substantial and conveyable interpretation; judges the present framework appropriately honest and harshly; and with the ratio metrics we circumvent the problem of a hard threshold \cite[1278]{He_2008}.
+While many metrics are available, the most commonly known and utilized are probably "accuracy", "Receiver Operating Characteristic" curve and the related measure "Area Under the Curve" (AUC) scores. While accuracy is intuitively meaningful and the ROC/AUC score has been coined as a "gold-standard" \citep[366]{perry_2013} appropriate for task where hard thresholds are imprudent\citep[1277-1278]{He_2008}, these measures also have some inherent limitations in regards to the specific problem at hand. Accuracy is not very suited for imbalanced data \citep[1264]{He_2008} and furthermore is usually implemented with a hard threshold. The ROC/AUC score does not demand any hard threshold, but it does tend to judge performance on highly imbalanced data too favorable \citep[1278]{He_2008}. Even more, while the ROC/AUC has a substantial interpretation, it is not easily conveyed. Going forward, I instead report the two metrics "Recall" and "Precision" along two closely related ratio metrics; the "Recall-Precision Curve" and the "Average Precision Rate". These measures are suitable for imbalanced data; have a substantial and conveyable interpretation; judges the present framework appropriately honest and harshly; and with the ratio metrics we circumvent the problem of a hard threshold \cite[1278]{He_2008}.
 
 Denoting "True Positives" TP, "False Posits" FP and "False Negatives", recall and precision are defined as follows\footnote{All mathematical definitions below are sourced from an article from \cite{He_2008}, but most of them can be found in any standard machine learning text book, such as \cite{Friedman_2001}.}:
 
@@ -336,8 +336,9 @@ With these recommendations regarding future endeavours, and a confident - if cau
 \pagebreak
 \section{Appendices}
 
-All scripts can be found on : \hyperlink{https://github.com/Polichinel/Conflict_Prediction}{https://github.com/Polichinel/Conflict\_Prediction}
+All python scripts used for the present endeavour are attach as HTML files or can be found on : \hyperlink{https://github.com/Polichinel/Conflict_Prediction}{https://github.com/Polichinel/Conflict\_Prediction}
 
+The scripts are: interpolation.html, Feature\_eng.html, data\_exploration.html, div.html, C\_shapes\_lookup.html, boosting.html and evaluation.html  
 
 \subsection{The Data Sources}\label{data_sources} % -------------------------------------------------------------------------
 
@@ -361,17 +362,13 @@ As I will show later on, many of the most important predictive features are also
 
 \subsubsection{PRIO}
 
-Given the geo-referenced nature of the UCDP data, the number of interesting data sources one could enhance it with are virtually endless. However, the aggregation of various geo-referenced and geo-spatial data accompanied with the appropriate grid construction and feature engineering can be a time consuming endeavour. While it is certainly a interesting and most likely fruitfully undertaking, it is one which will be saved for less preliminary work then the project at hand. Conveniently the Peace Research Institute Oslo (PRIO) has created what they call a "unified spatial data structure" \cite[1]{Tollefsen_2012}. More specifically they have divided the world - excluding Greenland and Antarctica - into grid cells of $0.5 \times 0.5$ decimal degrees. For each cell PRIO has gather a large selection of features, including economic, geographic and demographic features \citep{Tollefsen_2012}. Naturally the PRIO grid also extent itself across time, and the most current data includes cell-years from 1946 to 2015 - with some divergence in the data coverage across the years \citep{Tollefsen_2016}. On one side more complete data is available for more recent years; especially after 1990. On the other side no or little data is avialbel for the most recent years. Thus I utilize data from 1990 through 2010. This data includes relatively few random missing observations which a handle as described in the appendix, \autoref{missing}. Some variables a only account for in 5-years intervals. This is handled through cell-specific linear interpolation as illustrated and described in the appendix, \autoref{interpolation}.\par
+Given the geo-referenced nature of the UCDP data, the number of interesting data sources one could enhance it with are virtually endless. However, the aggregation of various geo-referenced and geo-spatial data accompanied with the appropriate grid construction and feature engineering can be a time consuming endeavour. While it is certainly a interesting and most likely fruitfully undertaking, it is one which will be saved for less preliminary work then the project at hand. Conveniently the Peace Research Institute Oslo (PRIO) has created what they call a "unified spatial data structure" \cite[1]{Tollefsen_2012}. More specifically they have divided the world - excluding Greenland and Antarctica - into grid cells of $0.5 \times 0.5$ decimal degrees. For each cell PRIO has gather a large selection of features, including economic, geographic and demographic features \citep{Tollefsen_2012}. Naturally the PRIO grid also extent itself across time, and the most current data includes cell-years from 1946 to 2015 - with some divergence in the data coverage across the years \citep{Tollefsen_2016}. On one side more complete data is available for more recent years; especially after 1990. On the other side no or little data is avialbel for the most recent years. Thus I utilize data from 1990 through 2010. This data includes relatively few random missing observations which are mainly handled through forward interpolation if possible, else backward interpolation or nearest observation. Some variables are only account for in 5-years intervals. This is handled through cell-specific linear interpolation as illustrated and described in the script \emph{interpolation.html}.
 
 The PRIO grid is constructed as geo-spatial data and primed for collaboration with the UCDP data. As such merging and handling these two data source is a trivial task. For now I refrain from the temptation to included all variables available through the PRIO grid data base, and instead chose handpick features which are most often and constantly associated with internal conflict in the corresponding litterateur. There are number of reasons for this choice, but mainly it is to keep the endeavour concise, facilitate convertibility and due to the fact that initial tests indicated that few theoretically sound features outperformed the inclusion of many crude features. The following section will present the included features and also discuss some notable absentees.\par
 
-
-\subsection{Handling of random missing values}\label{missing}
-
-\subsection{Linear interpolation from 5-years intervals}\label{interpolation}
-
 \subsection{The Included Features - Expanded}\label{feature_expanded}
 
+Below I give a spend some more ink on the theoretical backdrop support many of the included features. I also included some mathematical definitions where needed.
 
 \subsubsection{Wealth and State Capacities}
 
@@ -379,22 +376,23 @@ The PRIO grid is constructed as geo-spatial data and primed for collaboration wi
  
  A number of mechanisms have been proposed linking GDP to conflict, Two have been especial prolific. The first is championed by \cite{Collier_Hoeffler_1998, Collier_Hoeffler_2004} sees GDP per capita as a proxy for opportunity-cost. that is what i given citizen have to loss by engaging in conflict. The second story draws on some insight from \cite{Skocpol_1979} and also echoes the gospel of modernization theory \citep{Lipset_1959}. Regarding the context at hand it has most prominently been presented by \cite{Fearon_Laitin_2003}. Here GDP per capita is seen as as proxy for state capacities. Simple put; weak or fragile states have low GDP per capita and these states are more conflict prone\citep[88]{Fearon_Laitin_2003}.\par
  
- A measure for GCP (Gross cell product) per capita (ppp) is included in the PRIO GRID fomr the Gecon dataset \citep{Nordhaus_2006} and this measure could be aggregated creating a feature for GDP per capita (ppp) \citep{prio_code_2015}. However the data available from the directly from the PRIO GRID only extent to 2010. Fortunately \cite{Elvidge_2009}, \cite{Chen_Nordhuas_2011} have shown that Night light emission can serve as an proxy for economic activies - especially for countries of areas with low-quality statistical systems and few or no recent population or economic censuses. \citep{Chen_Nordhuas_2011} - an approach explicitly proposed by \cite[p. 101]{Cederman_Gleditsch_Buhaug_2013} in regards to conflict studies. A ad hoc illustration of the high correlation between the two features can also be found in the appendix, \autoref{GCP_corr}\footnote{Futhermore initial test showed very limited difference between the derived features and interactions, thou the features constructed on the basis of Night Light Emission was picked more often by the sequential feature selection process in \autoref{feature_selection}.}.\par
+ A measure for GCP (Gross cell product) per capita (ppp) is included in the PRIO GRID from the Gecon dataset \citep{Nordhaus_2006} and this measure could be aggregated creating a feature for GDP per capita (ppp) \citep{prio_code_2015}. However the data available from the directly from the PRIO GRID only extent to 2010. Fortunately \cite{Elvidge_2009}, \cite{Chen_Nordhuas_2011} have shown that Night light emission can serve as an proxy for economic activities - especially for countries of areas with low-quality statistical systems and few or no recent population or economic censuses. \citep{Chen_Nordhuas_2011} - an approach explicitly proposed by \cite[p. 101]{Cederman_Gleditsch_Buhaug_2013} in regards to conflict studies. A ad hoc illustration of the high correlation between the two features can also be found in the script \emph{data_exploration.html}.\par
  
- The measure of Nigth Light Emmision in the PRIO GRID is borrowed from \cite{Elvidge_2014}it extent all the way up to 2015 and calibrated as to better accommodate time series \cite{prio_code_2015}.\par % futhermore there is a interprebility problem with unpopulated cells having zero gpd per capita
+ The measure of Nigth Light Emmision in the PRIO GRID is borrowed from \cite{Elvidge_2014}it extent all the way up to 2015 and calibrated as to better accommodate time series \cite{prio_code_2015}.\par
  
- Thus I proceed from here with two features:
+ Just as the case with GDP ir GCP, it makes intuativly sens to correct the measure \emph{per capita}.
  
  \begin{itemize}
-     \item Cell-year specific Night Light Emission (mean)
-     \item Country-year specific Night Light Emission (aggregated mean) 
+     \item $\frac{Cell-year specific Night Light Emission (mean)}{Cell population}$
+     \item $\frac{Country-year specific Night Light Emission (aggregated mean)}{Country population}$ 
      %\item Country-year specific Night Light Emission (aggregated country median) % why? Den har du jo mest fordi du bruger den til at construere en anden var..
  \end{itemize}
 
-% Theritical justification for the cell level? Det er en lidt bræt slutning...
-Naturrally one could argue that wealth is a relative concept, which leads us to the next section.
+Logged, density and measures not corrected for population size was also tired, but I found these measures less effective.\par
 
-\subsubsection{Inequality and depravation} % ------------------------------------------------------------------------
+Naturrally one could argue that wealth is a relative concept, which leads us to the next section.\par
+
+\subsubsection{Inequality and Deprivation} % ------------------------------------------------------------------------
 
 If we - for the time being - leave the Strong State proposition behind and focus on the satisfaction of the individual citizens it is only natural to argues this satisfaction should be considered a function of \emph{what we have} and \emph{what we believe we rightfully should have}. This, indeed, is the crux of Robert Gurr's \citeyearpar{Gurr_1970} Relative Deprivation Theory. Perhaps one of the most seminal\footnote{At least after Marx} takes on inequality and conflict, \cite{Gurr_1970} defines relative deprivation: 
 
@@ -404,17 +402,14 @@ If we - for the time being - leave the Strong State proposition behind and focus
 
 While intuitively appalling, Gurr's theory was award little credit doing the haydays of comparative corss country conflict studies. Supporting statistical results failed to materialize, and the axplanation eccoed the of \cite[11]{Skocpol_1979}; injustice and misery is simply to widespread to account for the rarity of major conflicts (\citealp[p. 22]{Collier_Hoeffler_1998},  \citealp[p. 22]{Collier_Hoeffler_2004} \citealp[p. 44]{Fearon_Laitin_2003}(FLERE?)). (så lige styr på de 22 side tal der?)
 
-% That being said, these studies have looked at larger conflicts often setting a minimum of 1000 battle related deaths per year compared to the studies at hand wich operates with a treshold of only 25 deaths per year
-
 However, \cite{Cederman_Gleditsch_2009,Cederman_Gleditsch_Buhaug_2013} have noted that the aggregated country level features conventional used as indicators for inequality might lead to mis-specifications; that is, they do not properly measure the theoretical concept of relative deprivation or the correct mechanisms through which inequality affects conflict-propensity \citep[XX]{Cederman_Gleditsch_Buhaug_2013}. Acknowledging this critique I utilized the operationalization put forth in \cite[p. 104-105]{Cederman_Gleditsch_Buhaug_2013}\footnote{These scholars alos argues the higher conflict propensity might be fund in the other end of the inequality spectrum. That is; one could imagine a mechanism akin to relative deprivation in one end, while simultaneous at the other end, one might see well-off people wanting to secede from or take over a country if they fear to much redistribution. However, they find little statistical backing for this proposition, neither did my initial tests. Thus I only use the measures corresponding to actual Relative Deprivation}:\par
 
 $$y_g = \textrm{country year mean}\quad ,\quad  y_c = \textrm{cell year value}$$
 $$\textrm{low\_ratio} = y_c/y_g  \quad \textrm{if} \quad y_c < y_g, \quad 1 \quad \textrm{otherwise}$$
 
-%$$\textrm{high\_ratio} = y_g/y_c  \quad \textrm{if} \quad y_g > y_c, \quad 1 \quad \textrm{otherwise}$$
 Thus cells which are relatively well of compared to the mean of country takes the value 1. Cells worse of the the country mean takes a value above 1, with the magnitude of this value indicating \emph{how} severe the deprivatione is. \cite{Cederman_Gleditsch_Buhaug_2013} Uses GCP per capita (ppp) but as mentioned also suggests using night light emission, Thus I here produce ratio feature solely on Night Light emission (cell-year mean).\par
 
-While I do appreciate this operationalization I also construct my own relative deprivation feature, which differs in a number of small but relevant ways. First we know that wealth distributions in general are highly skewed, and this is no different when we use Nigt Light Emission as indicator (se Appendix XXXX). Thus, given Gurr's original conceptualization I find it more realistic that individuals should compare themselves to the median - not the mean. That is citizens in one cell compare their living standard to the most common living standard in the country over all. In the same vein, instead of a fraction, I simply calculate the difference between the cell-year values and the country-year median. Lastly I let the value start at 0. This I do to insure that interactions create later only "activates" if the cell is actually depraved. In the case of \cite{Cederman_Gleditsch_Buhaug_2013} when a cell is not depraved, the value of a interaction takes the naked value of the other interacted feature, which is arguably somewhat imprudent. Mathematical the features is formulated as such:\par
+While I do appreciate this operationalization I also construct my own relative deprivation feature, which differs in a number of small but relevant ways. First we know that wealth distributions in general are highly skewed, and this is no different when we use Nigt Light Emission as indicator. Thus, given Gurr's original conceptualization I find it more realistic that individuals should compare themselves to the median - not the mean. That is citizens in one cell compare their living standard to the most common living standard in the country over all. In the same vein, instead of a fraction, I simply calculate the difference between the cell-year values and the country-year median. Lastly I let the value start at 0. This I do to insure that interactions create later only "activates" if the cell is actually depraved. In the case of \cite{Cederman_Gleditsch_Buhaug_2013} when a cell is not depraved, the value of a interaction takes the naked value of the other interacted feature, which is arguably somewhat imprudent. Mathematical the features is formulated as such:\par
 
 $$y_g = \textrm{country year median}\quad ,\quad  y_c = \textrm{cell year value}$$
 
@@ -424,13 +419,7 @@ Thus the feature takes the value 0 if the cell is on level or above with the res
 
 \subsubsection{Ethnicity and Exclusion}
 
-
-%BLIMES 2006 er også interesant her: A carefully constructed, theoretically driven empirical test has not been carried out (regaring ethnisity and civil war onset) p. 539
-
-% Ethnicity:
-%\paragraph{excluded ethnic groups} (excluded and excluded\_binary) 
-
-Denotes the number of excluded ethnic groups (e.i. discriminated or powerless) in a given cell at a given year. The measures are originally from the GeoEPR/EPR data by \cite{Vogt_2015}. To better suit the theoretical argumentation laid forth in \cite{Cederman_Gleditsch_Buhaug_2013}(side) \citep{prio_code_2015}. I also create a dummy (excluded\_binary) which simply denote \emph{if} there are any excluded ethnic groups. 
+Denotes the number of excluded ethnic groups (e.i. discriminated or powerless) in a given cell at a given year. The measures are originally from the GeoEPR/EPR data by \cite{Vogt_2015}. To better suit the theoretical argumentation laid forth in \cite{Cederman_Gleditsch_Buhaug_2013}(side) \citep{prio_code_2015}. I create a dummy (excluded\_binary) which simply denote \emph{if} there are any excluded ethnic groups. 
 
 As with inequality the link between ethnic diverse societies and conflict propensity have been ridden with disagreement and controversies. In the quantitative literature results have remained somewhat inconsistent \citep[23-24]{Blattman_Miguel_2010}. A number of studies have fund different - and sometime quite convoluted - relationships between ethnicity or discrimination and conflict \citep{Collier_Hoeffler_1998, Fearon_2004, Blimes_2006, Hegre_Sambanis_2006, Goldstone_2010}, while other studies have fund little or no trace of the connection \citep{Fearon_Laitin_2003, Collier_Hoeffler_2004}(more? CH 2004 right?).\par 
 
@@ -438,30 +427,13 @@ As with the problem with inequality the lack of discernible results have often b
 
 Conveniently, a measure from \cite{Girardin_2015} of how many excluded ethnic groups reside in each PRIO GRID cell is readily aviable in the PRIO GRID. To mimic the theoretical proposition lead foth in \cite{Cederman_Gleditsch_Buhaug_2013} I binarize this variable to simply indicate whether or not a given cell is inhabited by a politicly excluded or discriminate ethnic group\footnote{Also initial test did not show much prospect of incorporating the full count}. 
 
-%\cite{Blimes_2006} etnisk factionalisering gør det meget sikre at andre facotre giver borger krig...
-% Komme nede ved hierarkiet
-
-Not surprisingly \cite{Cederman_Gleditsch_Buhaug_2013} futher finds that the properbilty of conflict gets even larger if political exclusion is followed by group deprivation, wich leads to the next feature:
-
-\subsubsection{Deprivation and Exclusion - an Interaction}
-
-This interaction does not need much justification; the general idea is simply that groups of humans (here specificly ethnic groups) which are both cut of from political influence and find themselves to be generally worse of then other - more influential - groups, tends to accumulate a lot of grievances. Given that few to no political solutions are available for these groups, they are reletively likely to experience conflict\cite[103-111]{Cederman_Gleditsch_Buhaug_2013}.\par
-
-Given that I have utilized to measures of relative deprivation I also construct two interaction to be evaluated by the systematic feature selection to come:
-
-$$ \textrm{excluded\_b\_low\_ratio\_nlights} = \textrm{excluded\_binary }\times \textrm{low\_ratio\_nlights} $$
-
-$$ \textrm{excluded\_b\_low\_median\_diff\_nlights} = \textrm{excluded\_binary }\times \textrm{low\_median\_diff\_nlights} $$
-
-One very relevant difference here is that the feature from \cite{Cederman_Gleditsch_Buhaug_2013} takes the plain value of 'excluded' $\in {0,1}$ if the cell is not deprived while the interaction only takes the value of 0 if 'excluded' takes the value zero. As mentioned I find this somewhat messy and statistically it makes it harder to determined the effect of 'excluded' in it self and the interaction. Naturally this is an issue I return to in \autoref{feature_selection}.\par
+Not surprisingly \cite{Cederman_Gleditsch_Buhaug_2013} futher finds that the properbilty of conflict gets even larger if political exclusion is followed by group deprivation, but the xgboost algorithm constructs it own interaction so I shall not be creating the interaction variable my self here.
 
 \subsubsection{Population size and density} 
 
 Returning to a variable with a rather flawless record regarding conflict onset we have "country population size" \citep{Collier_Hoeffler_1998, Fearon_Laitin_2003, Collier_Hoeffler_2004, Hegre_Sambanis_2006}\footnote{though see \cite{Goldstone_2010}}. Furthermore \cite[287]{Fearon_2004} also finds that country population is correlated with longer civil wars.\par
 
 Lastly when it comes to disaggregated grid data, the "grid population size" also seems a rather robust predictor \citep{Buhaug_2010, Cederman_Gleditsch_Buhaug_2013}\footnote{Though see \cite{Hegre_Oestby_Raleigh_2009}}. Thus, whether the features influence conflict duration is more disputed \citep{Collier_Hoeffler_1998, Fearon_2004}. The most common implementation is to use a log transformed version of the country or grid population count\footnote{Though \cite{Collier_Hoeffler_1998} use the plain count in 10.000's} which is also implemented in the project at hand.\par
-
-%(Det er vel endnu mere relevant for gridded? større variation?)(det er også log den FS finder, så måske du skal smide den anden væk..)
 
 One very simple explanation might be the various definitions of conflict and civil war used throughout the litterature. These definitions almost always refer to some minimum fatalities count [eks and refs]. Naturally high population counts makes these threshold relativly less restrictive.\par
 
@@ -473,25 +445,14 @@ $$\textrm{grid\_pop\_dens} = \frac{\textrm{grid\_pop}}{\textrm{grid\_area}}$$
 
 $$\textrm{country\_pop\_dens} = \frac{\textrm{country\_pop}}{\textrm{country\_area}}$$
 
-Which leads to the last included interaction concerning excluded ethinic groups.\par 
-
-\subsubsection{Density of the Excluded - Interaction} %----------------------------------------------------------- 
-
-(excluded\_pop, excluded\_b\_pop) 
-
-One more drawn directly from \cite{Cederman_Gleditsch_Buhaug_2013} disaggregated study conserns the interaction between population size and group exclusion. the Auothors construct an interaction between the size of the cell population and their feature for excluded ethnicities \citep[73-78]{Cederman_Gleditsch_Buhaug_2013}. Assuming that the size of the excluded population is at least positively correlated with the total cell population this feature captures the density of the excluded population. 
-
-$$ \textrm{excluded\_b\_pop}  = \textrm{excluded\_binary} \times \textrm{cell\_pop}  $$
-
-The theoretical argument is simply that it is not larger population but larger excluded populations that drives the relationship between conflict and population size \citep[69-74]{Cederman_Gleditsch_Buhaug_2013}.
+However, I find no gain to be made by including either the density or the logged count. Thus the raw count are utilized in the effort at hand.\par
 
 \subsubsection{Geography and Accessibility} %------------------------------------------------------------------
 
 \paragraph{Accessibility} As noted earlier, a strong state have often been presented as the prime inhibitor of internal conflicts. Naturally though, the strength of state must be considered relative to the territory over which it claims sovereignty - both in regards to size and permeability. \cite{Fearon_Laitin_2003} pointed to rough terrain and mountains as natural obstacles hindering effective projection of state power. Following this example \cite{Hegre_Sambanis_2006} concludes that a feature for rough terrain is found to robustly positively correlated with civil war across a large number of model specifications.\cite[526-529]{Hegre_Sambanis_2006}\footnote{Though see \cite{Goldstone_2010}}. The Prio Grid includes a readily available feature measuring the proportion of mountainous terrain within the cell based on \cite{Blyth_2002} wich I utilize.\par
 
-Another natural hindering for projecting state power is sheer distance \citep{Fearon_2004, Buhaug_Gates_Lujala_2009, Cederman_Buhaug_Roed_2009, Buhaug_2010}. The argument is straight forward:
+Another natural hindering for projecting state power is sheer distance \citep{Fearon_2004, Buhaug_Gates_Lujala_2009, Cederman_Buhaug_Roed_2009, Buhaug_2010}. 
 
-%\cite{Buhaug_2010} : cap dist
 \begin{displayquote}
 
 \emph{"The projection of power across distance comes at a cost. [...] In particular, large hinterlands and isolated peripheries are favorable to insurgency. In sum, this suggests that large countries are relatively more exposed to intrastate conflict"}\cite[113-114]{Buhaug_2010}
@@ -500,111 +461,24 @@ Another natural hindering for projecting state power is sheer distance \citep{Fe
 
 A number of interesting features could be derived from Buhuag's assertion above (and the paper in general). What I have included is the distance to the nations capital\footnote{The measure utilized by \cite{Buhaug_2010}}, the travel time to the nearest major city, and the total size of the country\cite{prio_code_2015}.
 
-%me: and also the grid cells are not the same size..
-
 
 \subsubsection{Trans-boarder Influences} %--------------------------------------------------------------------
 
-A number of different mechanism have been proposed and explored \citep[29-30]{Blattman_Miguel_2010}, the one explored here is rather simple and follows \cite{Hegre_Sambanis_2006} [TJEK IGEN!]. blabla
-
-Der er vel også lidt en tråd til Conflict dispersion....
-
-de to mål og hvorfor du inkoorporere begge.
-
-\paragraph{bdist1}  
-\paragraph{bdist3}
-
-% hvorfor samler du dem ikke bare i et mål? bare pluser dem sammen? 
-
-This is a very rough measure and is arguably a bit far removed from any specific theoretical concept, but for this preliminary project the measures will have to do.
-
-\subsubsection{Urban contra Rural Theater} %--------------------------------------------------------------------
-
-Ja, hvad er din teoritiske begrundelse her? går du tilbage til litteraturen om democratiske sammenbrud? Noget med at der er mere undertrykkelse i land områder hvilket leder? (Boix, Robinson, Acemogul...) Til grievences? Eller omvendt er det lettere at mobilisere i byerne?
-
-Det trækker også lidt på det accesability du har snakket om tidligere... Son of the soil..
-
-\paragraph{interp\_urban\_ih} her henter du også viden fra democratic breakdown lit.  
-\paragraph{interp\_agri\_ih}  her henter du også viden fra democratic breakdown lit.  og Skocpol
-
+A number of different mechanism have been proposed and explored \citep[29-30]{Blattman_Miguel_2010}, the one explored here is rather simple and follows \cite{Hegre_Sambanis_2006} I simply incorporate a measure for the distance to the nearest (land) border. I trued with the logged distance, but this yeilded no improvements. This is a very rough measure and is arguably a bit far removed from any specific theoretical concept, but for this preliminary project the measures will have to do.\par
 
 \subsubsection{Prime Commodities and the Recourse course} %-----------------------------------------------------------
 
-først: prime comoditeis in general:
-\cite{Collier_Hoeffler_1998, Collier_Hoeffler_2004}
-
-find no impact of prime comm. \cite[76]{Fearon_Laitin_2003} does find inpact of oil \cite[84-86]{Fearon_Laitin_2003}
-
-
-Kikker videre på prime comm. \cite{Fearon_2005}, ( or Natural reasources) \cite{Ross_2004}
-
-Og sons of the soils \cite{Fearon_2004}, men så skulle du lave nogle interactioner med excluded..
-
-\cite{Buhaug_2010} Oil disaggregated
-
-As such, the soil feature here included is a binary indicator of whether oil is know to be available for extraction in a given cell at a given year. % (petroleum\_full). 
-
-\cite{Hegre_Oestby_Raleigh_2009} : also a bit on prime Comm
-
-
-
+A lot have been written on this subject, but the empirical results have varied a lot \citep{Collier_Hoeffler_1998, Fearon_Laitin_2003, Fearon_2004, Ross_2004, Collier_Hoeffler_2004, Fearon_2005, Buhaug_2010, Hegre_Oestby_Raleigh_2009}. In this endeavour, I include a dichotomous feature denoting whether or not a given cell is known to hold oil deposits. Thus, a cell is not denoted as having oil before oil is actually discovered.\par
 
 \subsubsection{Inertia, dispersion, traps and time trends} %---------------------------------------------------------------
 
-%Havd gør du? Hvordan og hvornår bliver dette inkoorporet i modellen?
-
-Conflict, inertia, trap, conflict dispersion, time trends ect
-
-\cite{Collier_Hoeffler_2004} : linear DECAY term since last conflict.
-
-\cite{Goldstone_2010} : conflict ridden neighbourhood.
-
-\cite{Hegre_Sambanis_2006} : which we model as a DECAY function of time at peace
-
-"Among others, we include a decay function proxregc of the Polity
-durable variable, which measures the number of years since an institutional change
-that leads to a minimum of three points' change on the Polity index."
-
-"In a review of the quantitative literature on civil war, Sambanis
-(2002) identified the following three core variables that are almost always included
-in models of civil war onset: the natural log of population (Inpop), the length of
-peacetime until the outbreak of a war (pt8, which we model as a decay function of
-time at peace), and the natural log of per capita gross domestic product (GDP) in
-constant dollars (Ingdp)."
-
-%Neighbourhood effect of civil wars - right? Ud over spatial autocorrolation kan du modllere det på både lande og celle niveau - det vill fylde meget mind, men også smide meget information væk...
-
-%har også argumenter vedr. mange etniske grupper og faldende risiko for conflict... Og det har C og H 1998 jo også
-
-%også om hvorfor prediction er viktigt (p. 545) - se også Schrodt xxxx, Goldstone 2010 og Greenhill, Bakke et al.. XXXX
-
-%"The "neighborhood at war" (natwar) variable has robustly positive estimates for
-%both conflict variables, lending support to hypotheses regarding the significance of
-%diffusion and contagion effects in civil war"
-
-\cite{Cederman_Gleditsch_Buhaug_2013} Number of previous conflicts
-
-
+Conflict traps and inertia have been modelled or proposed by many. \cite{Collier_Hoeffler_2004} uses a linear decay since last conflict; \cite{Hegre_Sambanis_2006} uses a linear decay since last peace; \cite{Cederman_Gleditsch_Buhaug_2013} count the number of previous conflicts; and \cite{perry_2013} propose a "deterioration index". Meanwhile, cross-country dispersion has been used by \cite{Goldstone_2010}. I include a number of features which aims to capture the pattern of conflict as it moves through space and time. Distance from cell center to nearest conflict, yearly fatalities in cell, yearly fatalities in the country as a whole and the total number of years the given cell has been a conflict zone in the past and .\par
 
 \subsubsection{Notable Absentees}\label{notable_absentees} %---------------------------------------------
 
-Notable missing: infant mort, political system and intra elite conflict... \citep{Goldstone_2010} Past conflicts (contry and cell level..) (conflict trapp, Coiller ect) ... Trans boarder thing.. Downgraded... \citep{Cederman_Gleditsch_Buhaug_2013}
-
-\cite[119-142]{Cederman_Gleditsch_Buhaug_2013}: Du har border, men måske er mekanismen ikke rigtigt specificeret. det er trans-boarder-ethnic-kin
-
-\cite{Goldstone_2010} : Infant mortality deviant from global mean, factionalisation (political system), state led discrimination (nej, den e rjo lidt med igennem excluded), conflict ridden neighbourhood(er med på celle basis gennem nearest ish). p: 
-
-
-%\section{Data Handling and exploration}
-% Nej! det skal ind under data sources of features.
-
-
-\subsection{GCP and Night Light Emission}\label{GCP_corr}
-
-
+Notable missing include infant mortality, political system and intra elite conflict \citep{Goldstone_2010}. These should be tested in feature endeavours, but was not included here due to the limited scope of the project. The PRIO dataset did included a measure of infant mortality but it was ridden with missing values. Regarding the two other dimension, these would require the introduction of a third data source.\par
 
 \subsubsection{Bayesian Prior Correction}\label{bayes_correction}
-%\todo[inline]{BAYESIAN CORRECTION TO COME - you're are still getting to many false positives...}
 
 A small issue with the undersampling procedure above is that the probabilities predicted is somewhat inflated. This does not as such hurt the prediction effort. This might seem counter intuitively, but since the probability threshold beyond which we denote a observation to be a conflict can be chosen at will, it is the ratio between such threshold and the probabilities that. Not one or the other. To illustrate: normally one would set a threshold at 50\%. If the probability of conflict is above 50\% we predict a conflict and if it is below we do not predict a conflict. This threshold, while conventional, is entirely arbitrary and for some purposes it might well make more sense to set the threshold at 20\% or 80\%. Thus knowing that my estimates are inflated do to undersampling I could just easily set my threshold a bit higher then normal, say at 60 or even 80\%. However, I aim to not implement any hard threshold but instead presents the actual probabilities and their certainty for reader to survey. As such, for these probabilities to be intuitively meaningful they need to match what we actually know regarding the propensity of conflict events. This is easily implemented with an Bayesian prior correction\footnote{Related to what is presented in \cite{King_Zeng_2001, king_zeng_2001b} and \cite{Goldstone_2010}}. Denoting the the estimated probabilities of an event $Pr(E_{estimated})$, estimated probabilities of a non-event $Pr(NE_{estimated})$ the  and the corrected probabilities of events as $Pr(E_{corrected})$ the correction is as follows:
 
@@ -612,33 +486,24 @@ A small issue with the undersampling procedure above is that the probabilities p
 Pr(E_{corrected}) = \frac{Pr(E_{estimated}) \times 0.2}{(Pr(E_{estimated}) \times 0.2)+(Pr(NE_{estimated} \times 0.8)} \tag{1} \label{eq:bayes}
 \]
 
-Where 0.2 is the prior, which is here set as the factor between the under sampled ratio of events of non-events and the actual ratio between events and non events. 0.8 is simply $1-prior$. The correction is a very crude utilization of Bayes theorem \citep[7-8]{Gelman_2013}, and could be much improved. Even more it is only semi-Bayesian since I use hard priors - scalars - instead of some appropriate distribution. A fruitful approach might also be to create cell, country or region specific priors possible in some hierarchical setting. This however is a challenge for an other endeavour. For now the crude correction will do - and as sown in \autoref{bayes_correction} it does rather well.\par
+Where 0.2 is the prior, which is here set as the factor between the under sampled ratio of events of non-events and the actual ratio between events and non events. 0.8 is simply $1-prior$. The correction is a very crude utilization of Bayes theorem \citep[7-8]{Gelman_2013}, and could be much improved. Even more it is only semi-Bayesian since I use hard priors - scalars - instead of some appropriate distribution. A fruitful approach might also be to create cell, country or region specific priors possible in some hierarchical setting. This however is a challenge for an other endeavour. For now the crude correction will do - and as sown in \autoref{true_conf}, \autoref{} and \autoref{pred_conf_b} it does rather well. The point is that the non-corrected probabilities depicts a overly dangerous world. This can also be seen be setting an arbitrary threshold at 0.5 for classification. With the non-corrected probabilities this leads to a precision around 0.12 and a recall above 0.9, while the corrected probabilities splits it almost even. This proofs nothing, but it is a nice indication of more realistic estimates.\par
 
-\todo[inline]{Men så skal du lige havde all tre plit ind here og fjerne henvisning in over stående text.}
-
-
-\subsection{Accuracy, ROC and AUC}\label{app_metrics}
-
-%\section{ref tjeck..}
-%\cite{Fearon_Laitin_2003}
-%\cite{Collier_Hoeffler_2004}
-%\cite{Fearon_2004}
-%\cite{Ross_2004}
-%\cite{Fearon_2005}
-%\cite{Hegre_Sambanis_2006}
-%\cite{Kalyvas_2007} % Hvad med den her? Den kan ellers bruges massere steder!!!
-%\cite{Vreeland_2008}  % Har du brugt den her? -> eller nævn i abseentess afsnitet
-%\cite{Cederman_Gleditsch_2009}
-%\cite{Cunningham_Gleditsch_Salehyan_2009}
-%\cite{Hegre_Oestby_Raleigh_2009}
-%\cite{Buhaug_Gates_Lujala_2009}
-%\cite{Cederman_Buhaug_Roed_2009}
-%\cite{Beardsley_McQuinn_2009} % Har du brugt den her?
-%\cite{Weidmann_2009}
-%\cite{Goldstone_2010}
-%\cite{Blattman_Miguel_2010}
-%\cite{Buhaug_2010}
-%\cite{Cederman_Weidmann_Gleditsch_2011}
-%\cite{Cederman_Gleditsch_Buhaug_2013} (only read the conclusion)
+\begin{figure}[!htb]
+  \centering
+  \begin{minipage}[b]{1\textwidth}
+    \includegraphics[width=\textwidth]{conflicts_2007.pdf}
+    \caption{\footnotesize{Conflicts observed in 2007 by UCDP aggregated at PRIO grid cell level. The measure is binary, with yellow denoting one or more conflicts in the given cell. Afghanistan, Iraq, Turkmenistan, Georgia and Zimbabwe are missing due to the coding rules of UCDP.}}\label{true_conf}
+  \end{minipage}
+  \\	
+  \begin{minipage}[b]{1\textwidth}
+    \includegraphics[width=\textwidth]{pred_prob_conflicts_2007_bayes.pdf}
+    \caption{\footnotesize{The estimate probability (prior corrected) of conflicts in 2007 using data from 2006 and the model trained on data from 1990 through 2005. The measure is between 0 and 1, where a 1 would denote certain conflict and be colored bright yellow as in \autoref{true_conf}. Afghanistan, Iraq, Turkmenistan, Georgia and Zimbabwe are missing due to the coding rules of UCDP.}}\label{pred_conf_b}
+  \end{minipage}
+  \\
+  \begin{minipage}[b]{1\textwidth}
+    \includegraphics[width=\textwidth]{pred_prob_conflicts_2007.pdf}
+    \caption{\footnotesize{The estimate probability (NOT prior corrected) of conflicts in 2007 using data from 2006 and the model trained on data from 1990 through 2005. The measure is between 0 and 1, where a 1 would denote certain conflict and be colored bright yellow as in \autoref{true_conf}. Afghanistan, Iraq, Turkmenistan, Georgia and Zimbabwe are missing due to the coding rules of UCDP.}}\label{pred_conf_b}
+  \end{minipage}
+\end{figure}
 
 \end{document}
